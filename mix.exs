@@ -14,7 +14,7 @@ defmodule WatchLater.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :oauth2],
+      extra_applications: [:logger],
       mod: {WatchLater.Application, []}
     ]
   end
@@ -22,8 +22,9 @@ defmodule WatchLater.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:oauth2, "~> 2.0"},
-      {:jason, "~> 1.2"}
+      {:tesla, "~> 1.3.0"},
+      {:jason, "~> 1.2"},
+      {:hackney, "~> 1.10"}
     ]
   end
 end

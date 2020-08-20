@@ -1,7 +1,5 @@
 defmodule WatchLater.CLI do
-  alias WatchLater.{GoogleAuth, Marshal}
-
-  @db_path "/tmp/watch_leter.db"
+  alias WatchLater.{GoogleAuth, Repository}
 
   def authorize do
     auth_url = GoogleAuth.authorize_url(scope: "https://www.googleapis.com/auth/youtube.readonly")
@@ -13,7 +11,7 @@ defmodule WatchLater.CLI do
   end
 
   defp store_token({:ok, token} = result) do
-    Marshal.dump(token, @db_path)
+    Repository.save_token(token)
     result
   end
 

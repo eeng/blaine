@@ -1,11 +1,7 @@
 defmodule WatchLater.GoogleAuth do
   @config Application.get_env(:watch_later, __MODULE__)
 
-  defmodule Token do
-    defstruct [:access_token, :expires_in, :refresh_token, :token_type]
-    use ExConstructor
-  end
-
+  alias WatchLater.AuthToken
   use Tesla
 
   plug Tesla.Middleware.BaseUrl, "https://oauth2.googleapis.com"
@@ -35,7 +31,7 @@ defmodule WatchLater.GoogleAuth do
     |> handle_response()
   end
 
-  def renew_token(%Token{refresh_token: refresh_token}) do
+  def renew_token(%AuthToken{refresh_token: refresh_token}) do
     token =
       post("/token", %{
         client_id: @config[:client_id],
@@ -53,7 +49,7 @@ defmodule WatchLater.GoogleAuth do
 
   defp handle_response(response) do
     case response do
-      {:ok, %{status: 200, body: body}} -> {:ok, Token.new(body)}
+      {:ok, %{status: 200, body: body}} -> {:ok, AuthToken.new(body)}
       {:ok, %{body: body}} -> {:error, body}
       error -> error
     end

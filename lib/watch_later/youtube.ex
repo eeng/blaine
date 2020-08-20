@@ -1,7 +1,7 @@
 defmodule WatchLater.YouTube do
-  alias WatchLater.GoogleAuth.Token
+  alias WatchLater.AuthToken
 
-  def client(%Token{access_token: access_token, token_type: token_type}) do
+  def client(%AuthToken{access_token: access_token, token_type: token_type}) do
     Tesla.client([
       {Tesla.Middleware.BaseUrl, "https://www.googleapis.com/youtube/v3"},
       {Tesla.Middleware.Headers, [{"Authorization", "#{token_type} #{access_token}"}]},

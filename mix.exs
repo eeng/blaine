@@ -24,7 +24,8 @@ defmodule WatchLater.MixProject do
     [
       {:tesla, "~> 1.3.0"},
       {:jason, "~> 1.2"},
-      {:hackney, "~> 1.10"}
+      {:hackney, "~> 1.10"},
+      {:exconstructor, "~> 1.1"}
     ]
   end
 end

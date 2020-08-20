@@ -10,13 +10,14 @@ defmodule WatchLater.GoogleAuth do
 
   defmodule Token do
     defstruct [:access_token, :expires_in, :refresh_token, :token_type]
+    use ExConstructor
   end
 
   def authorize_url(params \\ []) do
     defaults = %{
+      client_id: @config[:client_id],
       response_type: "code",
-      redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
-      client_id: @config[:client_id]
+      redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
     }
 
     query = params |> Enum.into(defaults) |> URI.encode_query()
@@ -50,23 +51,9 @@ defmodule WatchLater.GoogleAuth do
 
   defp post_request(body) do
     case post("/token", body) do
-      {:ok, %{status: 200, body: body}} -> {:ok, to_struct(Token, body)}
+      {:ok, %{status: 200, body: body}} -> {:ok, Token.new(body)}
       {:ok, %{body: body}} -> {:error, body}
       error -> error
     end
-  end
-
-  @doc """
-  Creates a struct from a map of strings.
-  """
-  def to_struct(kind, attrs) do
-    struct = struct(kind)
-
-    Enum.reduce(Map.to_list(struct), struct, fn {k, _}, acc ->
-      case Map.fetch(attrs, Atom.to_string(k)) do
-        {:ok, v} -> %{acc | k => v}
-        :error -> acc
-      end
-    end)
   end
 end

@@ -1,4 +1,6 @@
 defmodule WatchLater.Google.AuthAPI do
+  @behaviour WatchLater.Google.Behaviours.AuthAPI
+
   alias WatchLater.Google.AuthToken
   use Tesla
 
@@ -20,6 +22,7 @@ defmodule WatchLater.Google.AuthAPI do
     "https://accounts.google.com/o/oauth2/v2/auth?" <> query
   end
 
+  @impl true
   def get_token(code) do
     body = %{
       code: code,

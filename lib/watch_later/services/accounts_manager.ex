@@ -30,8 +30,14 @@ defmodule WatchLater.Services.AccountsManager do
 
   @impl true
   def handle_call({:add_account, code, role}, _from, accounts) do
-    account = %Account{code: code, role: role}
-    {:reply, account, [account | accounts]}
+    case auth_api().get_token(code) do
+      {:ok, token} ->
+        account = %Account{code: code, role: role, auth_token: token}
+        {:reply, {:ok, account}, [account | accounts]}
+
+      error ->
+        {:reply, error, accounts}
+    end
   end
 
   @impl true
@@ -43,4 +49,6 @@ defmodule WatchLater.Services.AccountsManager do
   defp role_matches?(_, :all), do: true
   defp role_matches?(%Account{role: role}, role), do: true
   defp role_matches?(_, _), do: false
+
+  defp auth_api(), do: Application.get_env(:watch_later, :google_auth_api)
 end

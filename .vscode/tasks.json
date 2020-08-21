@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "elixir: Run Elixir script",
+      "label": "Run Elixir script",
       "command": "elixir",
       "type": "shell",
       "args": ["${file}"],
@@ -16,7 +16,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Launch IEx session",
+      "label": "Launch IEx session",
       "command": "iex -S mix",
       "type": "shell",
       "presentation": {
@@ -28,7 +28,7 @@
       "problemMatcher": []
     },
     {
-      "label": "elixir: Launch Phoenix server",
+      "label": "Launch Phoenix server",
       "command": "iex -S mix phx.server",
       "type": "shell",
       "presentation": {
@@ -41,7 +41,7 @@
       "problemMatcher": []
     },
     {
-      "label": "elixir: Ecto setup",
+      "label": "Ecto setup",
       "command": "mix ecto.setup",
       "type": "shell",
       "presentation": {
@@ -53,7 +53,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Ecto reset",
+      "label": "Ecto reset",
       "command": "mix ecto.reset",
       "type": "shell",
       "presentation": {
@@ -65,7 +65,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: DB reset",
+      "label": "DB reset",
       "command": "mix db.reset",
       "type": "shell",
       "presentation": {
@@ -77,7 +77,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Ecto migrate",
+      "label": "Ecto migrate",
       "command": "mix ecto.migrate",
       "type": "shell",
       "presentation": {
@@ -89,7 +89,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Get dependencies",
+      "label": "Get dependencies",
       "command": "mix deps.get",
       "type": "shell",
       "presentation": {
@@ -101,7 +101,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Run all tests",
+      "label": "Run all tests",
       "command": "mix test",
       "type": "shell",
       "presentation": {
@@ -113,7 +113,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Run tests in current file",
+      "label": "Run tests in current file",
       "command": "mix test ${relativeFile}",
       "type": "shell",
       "presentation": {
@@ -125,7 +125,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Run test under cursor",
+      "label": "Run test under cursor",
       "command": "mix test ${relativeFile}:${lineNumber}",
       "type": "shell",
       "presentation": {
@@ -137,7 +137,7 @@
       "problemMatcher": ["$mixCompileError"]
     },
     {
-      "label": "elixir: Run test watcher",
+      "label": "Run test watcher",
       "command": "mix test.watch --stale",
       "type": "shell",
       "presentation": {
@@ -148,6 +148,17 @@
         "group": "dev"
       },
       "problemMatcher": ["$mixCompileError"]
+    },
+    {
+      "label": "Start dev tasks",
+      "dependsOn": ["Launch IEx session", "Run test watcher"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
     }
   ]
 }

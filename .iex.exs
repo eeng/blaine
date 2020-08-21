@@ -1,2 +1,2 @@
 alias WatchLater.Google
-alias WatchLater.CLI
+alias WatchLater.Presentation.CLI

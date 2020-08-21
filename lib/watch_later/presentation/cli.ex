@@ -1,4 +1,4 @@
-defmodule WatchLater.CLI do
+defmodule WatchLater.Presentation.CLI do
   alias WatchLater.Repository
   alias WatchLater.Google.AuthAPI
 

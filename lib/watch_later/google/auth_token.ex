@@ -4,7 +4,7 @@ defmodule WatchLater.Google.AuthToken do
   alias __MODULE__
   alias WatchLater.Util.Clock
 
-  def from_json(json, clock \\ Clock.Real) do
+  def from_json(json, clock \\ Clock) do
     generated_at = clock.current_timestamp()
 
     %AuthToken{

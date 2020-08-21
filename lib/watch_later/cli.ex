@@ -2,11 +2,15 @@ defmodule WatchLater.CLI do
   alias WatchLater.{GoogleAuth, Repository}
 
   def authorize do
-    auth_url = GoogleAuth.authorize_url(scope: "https://www.googleapis.com/auth/youtube.readonly")
-    IO.puts("Visit the following URL and copy the returned code:")
+    scopes = ~w(
+      https://www.googleapis.com/auth/userinfo.profile
+      https://www.googleapis.com/auth/youtube.readonly
+    ) |> Enum.join(" ")
+    auth_url = GoogleAuth.authorize_url(scope: scopes)
+    IO.puts("Visit the following URL and copy the given code:\n")
     IO.puts(auth_url <> "\n")
 
-    code = IO.gets("Paste the code here: ") |> String.trim()
+    code = IO.gets("Then paste the code here: ") |> String.trim()
     GoogleAuth.get_token(code) |> store_token()
   end
 

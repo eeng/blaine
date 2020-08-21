@@ -1,4 +1,4 @@
-defmodule WatchLater.AuthToken do
+defmodule WatchLater.Google.AuthToken do
   defstruct [:access_token, :expires_in, :expires_at, :refresh_token, :token_type]
 
   alias WatchLater.Clock

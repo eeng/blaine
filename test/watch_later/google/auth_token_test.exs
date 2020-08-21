@@ -1,6 +1,9 @@
-defmodule WatchLater.AuthTokenTest do
+defmodule WatchLater.Google.AuthTokenTest do
   use ExUnit.Case, async: true
-  alias WatchLater.{AuthToken, MockClock}
+
+  alias WatchLater.MockClock
+  alias WatchLater.Google.AuthToken
+
   import Mox
   setup :verify_on_exit!
 

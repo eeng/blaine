@@ -1,18 +1,18 @@
-defmodule WatchLater.People do
-  alias WatchLater.AuthToken
+defmodule WatchLater.Google.YouTubeAPI do
+  alias WatchLater.Google.AuthToken
 
   def client(%AuthToken{access_token: access_token, token_type: token_type}) do
     Tesla.client([
-      {Tesla.Middleware.BaseUrl, "https://people.googleapis.com/v1"},
+      {Tesla.Middleware.BaseUrl, "https://www.googleapis.com/youtube/v3"},
       {Tesla.Middleware.Headers, [{"Authorization", "#{token_type} #{access_token}"}]},
       Tesla.Middleware.JSON,
       Tesla.Middleware.Logger
     ])
   end
 
-  # Requires scope https://www.googleapis.com/auth/userinfo.profile
-  def me(client, params \\ []) do
-    client |> Tesla.get("/people/me", query: params) |> handle_response()
+  # Requires scope https://www.googleapis.com/auth/youtube.readonly
+  def list_subscriptions(client, params \\ []) do
+    client |> Tesla.get("/subscriptions", query: params) |> handle_response()
   end
 
   defp handle_response(response) do

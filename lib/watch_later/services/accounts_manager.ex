@@ -47,7 +47,7 @@ defmodule WatchLater.Services.AccountsManager do
   end
 
   defp fetch_profile(token) do
-    people_api().client(token) |> people_api().me(personFields: "names") |> extract_profile()
+    people_api().me(token, personFields: "names") |> extract_profile()
   end
 
   defp extract_profile({:ok, profile}) do

@@ -30,16 +30,13 @@ defmodule WatchLater.Services.AccountsManagerTest do
     end
 
     test "should retrieve the account profile using the People API", %{manager: m} do
-      response = profile("100", "Max")
+      response = profile_response("100", "Max")
 
-      MockAuthAPI |> expect(:get_token, fn _ -> {:ok, "a token"} end)
-      MockPeopleAPI |> expect(:client, fn "a token" -> :a_client end)
+      MockAuthAPI |> expect(:get_token, fn _ -> {:ok, "token"} end)
+      MockPeopleAPI |> expect(:me, fn "token", personFields: "names" -> {:ok, response} end)
 
-      MockPeopleAPI
-      |> expect(:me, fn :a_client, personFields: "names" -> {:ok, response} end)
-
-      {:ok, account} = AccountsManager.add_account(m, "some code", :provider)
-      assert %Account{name: "Max", id: "100"} = account
+      {:ok, account} = AccountsManager.add_account(m, "code", :provider)
+      assert %Account{id: "100", name: "Max"} = account
     end
   end
 
@@ -60,12 +57,11 @@ defmodule WatchLater.Services.AccountsManagerTest do
     allow(MockAuthAPI, self(), manager)
     allow(MockPeopleAPI, self(), manager)
     MockAuthAPI |> stub(:get_token, fn _ -> {:ok, :token} end)
-    MockPeopleAPI |> stub(:client, fn _ -> {:ok, :client} end)
-    MockPeopleAPI |> stub(:me, fn _, _ -> {:ok, profile(1, "x")} end)
+    MockPeopleAPI |> stub(:me, fn _, _ -> {:ok, profile_response(1, "x")} end)
     :ok
   end
 
-  defp profile(id, name) do
+  defp profile_response(id, name) do
     %{
       "names" => [
         %{

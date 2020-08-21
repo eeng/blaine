@@ -37,6 +37,7 @@ defmodule WatchLater.Google.AuthAPI do
     end
   end
 
+  @impl true
   def renew_token(%AuthToken{refresh_token: refresh_token}) do
     body = %{
       client_id: config(:client_id),

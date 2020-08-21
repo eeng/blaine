@@ -3,8 +3,7 @@ defmodule WatchLater.Google.PeopleAPI do
 
   alias WatchLater.Google.AuthToken
 
-  @impl true
-  def client(%AuthToken{access_token: access_token, token_type: token_type}) do
+  defp client(%AuthToken{access_token: access_token, token_type: token_type}) do
     Tesla.client([
       {Tesla.Middleware.BaseUrl, "https://people.googleapis.com/v1"},
       {Tesla.Middleware.Headers, [{"Authorization", "#{token_type} #{access_token}"}]},
@@ -15,8 +14,8 @@ defmodule WatchLater.Google.PeopleAPI do
 
   # Requires scope https://www.googleapis.com/auth/userinfo.profile
   @impl true
-  def me(client, params \\ []) do
-    client |> Tesla.get("/people/me", query: params) |> handle_response()
+  def me(token, params \\ []) do
+    client(token) |> Tesla.get("/people/me", query: params) |> handle_response()
   end
 
   defp handle_response(response) do

@@ -30,11 +30,11 @@ defmodule WatchLater.Services.AccountsManager do
 
   @impl true
   def handle_call({:add_account, code, role}, _from, accounts) do
-    case auth_api().get_token(code) do
-      {:ok, token} ->
-        account = %Account{code: code, role: role, auth_token: token}
-        {:reply, {:ok, account}, [account | accounts]}
-
+    with {:ok, token} <- auth_api().get_token(code),
+         {id, name} <- fetch_profile(token) do
+      account = %Account{code: code, role: role, auth_token: token, id: id, name: name}
+      {:reply, {:ok, account}, [account | accounts]}
+    else
       error ->
         {:reply, error, accounts}
     end
@@ -46,9 +46,24 @@ defmodule WatchLater.Services.AccountsManager do
     {:reply, filtered, accounts}
   end
 
+  defp fetch_profile(token) do
+    people_api().client(token) |> people_api().me(personFields: "names") |> extract_profile()
+  end
+
+  defp extract_profile({:ok, profile}) do
+    %{
+      "names" => [
+        %{"displayName" => name, "metadata" => %{"source" => %{"id" => id}}}
+      ]
+    } = profile
+
+    {id, name}
+  end
+
   defp role_matches?(_, :all), do: true
   defp role_matches?(%Account{role: role}, role), do: true
   defp role_matches?(_, _), do: false
 
   defp auth_api(), do: Application.get_env(:watch_later, :google_auth_api)
+  defp people_api(), do: Application.get_env(:watch_later, :google_people_api)
 end

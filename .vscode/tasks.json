@@ -152,12 +152,6 @@
     {
       "label": "Start dev tasks",
       "dependsOn": ["Launch IEx session", "Run test watcher"],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": false
-      },
       "problemMatcher": []
     }
   ]

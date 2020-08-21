@@ -30,7 +30,7 @@ defmodule WatchLater.Google.AuthAPI do
     }
 
     with {:ok, body} <- post("/token", body) |> handle_response() do
-      {:ok, AuthToken.new(body)}
+      {:ok, AuthToken.from_json(body)}
     end
   end
 
@@ -43,7 +43,7 @@ defmodule WatchLater.Google.AuthAPI do
     }
 
     with {:ok, body} <- post("/token", body) |> handle_response() do
-      {:ok, AuthToken.new(body) |> Map.put(:refresh_token, refresh_token)}
+      {:ok, AuthToken.from_json(body) |> Map.put(:refresh_token, refresh_token)}
     end
   end
 

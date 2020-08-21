@@ -2,16 +2,11 @@ defmodule WatchLater.Google.AuthAPI do
   @behaviour WatchLater.Google.Behaviours.AuthAPI
 
   alias WatchLater.Google.AuthToken
-  use Tesla
-
-  plug Tesla.Middleware.BaseUrl, "https://oauth2.googleapis.com"
-  plug Tesla.Middleware.FormUrlencoded
-  plug Tesla.Middleware.DecodeJson
-  plug Tesla.Middleware.Logger
+  alias WatchLater.Util.HTTP
 
   defp config(key), do: Application.get_env(:watch_later, __MODULE__)[key]
 
-  def authorize_url(params \\ []) do
+  def authorize_url(params) do
     defaults = %{
       client_id: config(:client_id),
       response_type: "code",
@@ -20,6 +15,13 @@ defmodule WatchLater.Google.AuthAPI do
 
     query = params |> Enum.into(defaults) |> URI.encode_query()
     "https://accounts.google.com/o/oauth2/v2/auth?" <> query
+  end
+
+  defp client() do
+    HTTP.client(
+      base_url: "https://oauth2.googleapis.com",
+      format: :form_request_json_response
+    )
   end
 
   @impl true
@@ -32,7 +34,7 @@ defmodule WatchLater.Google.AuthAPI do
       grant_type: "authorization_code"
     }
 
-    with {:ok, body} <- post("/token", body) |> handle_response() do
+    with {:ok, body} <- HTTP.post(client(), "/token", body: body) do
       {:ok, AuthToken.from_json(body)}
     end
   end
@@ -46,16 +48,8 @@ defmodule WatchLater.Google.AuthAPI do
       grant_type: "refresh_token"
     }
 
-    with {:ok, body} <- post("/token", body) |> handle_response() do
+    with {:ok, body} <- HTTP.post(client(), "/token", body: body) do
       {:ok, AuthToken.from_json(body) |> Map.put(:refresh_token, refresh_token)}
-    end
-  end
-
-  defp handle_response(response) do
-    case response do
-      {:ok, %{status: 200, body: body}} -> {:ok, body}
-      {:ok, %{body: body}} -> {:error, body}
-      error -> error
     end
   end
 end

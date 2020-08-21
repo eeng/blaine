@@ -2,27 +2,18 @@ defmodule WatchLater.Google.PeopleAPI do
   @behaviour WatchLater.Google.Behaviours.PeopleAPI
 
   alias WatchLater.Google.AuthToken
+  alias WatchLater.Util.HTTP
 
   defp client(%AuthToken{access_token: access_token, token_type: token_type}) do
-    Tesla.client([
-      {Tesla.Middleware.BaseUrl, "https://people.googleapis.com/v1"},
-      {Tesla.Middleware.Headers, [{"Authorization", "#{token_type} #{access_token}"}]},
-      Tesla.Middleware.JSON,
-      Tesla.Middleware.Logger
-    ])
+    HTTP.client(
+      base_url: "https://people.googleapis.com/v1",
+      headers: [{"Authorization", "#{token_type} #{access_token}"}]
+    )
   end
 
   # Requires scope https://www.googleapis.com/auth/userinfo.profile
   @impl true
   def me(token, params \\ []) do
-    client(token) |> Tesla.get("/people/me", query: params) |> handle_response()
-  end
-
-  defp handle_response(response) do
-    case response do
-      {:ok, %{status: 200, body: body}} -> {:ok, body}
-      {:ok, %{body: %{"error" => error}}} -> {:error, error}
-      error -> error
-    end
+    client(token) |> HTTP.get("/people/me", query: params)
   end
 end

@@ -1,25 +1,16 @@
 defmodule WatchLater.Google.YouTubeAPI do
   alias WatchLater.Google.AuthToken
+  alias WatchLater.Util.HTTP
 
-  def client(%AuthToken{access_token: access_token, token_type: token_type}) do
-    Tesla.client([
-      {Tesla.Middleware.BaseUrl, "https://www.googleapis.com/youtube/v3"},
-      {Tesla.Middleware.Headers, [{"Authorization", "#{token_type} #{access_token}"}]},
-      Tesla.Middleware.JSON,
-      Tesla.Middleware.Logger
-    ])
+  defp client(%AuthToken{access_token: access_token, token_type: token_type}) do
+    HTTP.client(
+      base_url: "https://www.googleapis.com/youtube/v3",
+      headers: [{"Authorization", "#{token_type} #{access_token}"}]
+    )
   end
 
   # Requires scope https://www.googleapis.com/auth/youtube.readonly
-  def list_subscriptions(client, params \\ []) do
-    client |> Tesla.get("/subscriptions", query: params) |> handle_response()
-  end
-
-  defp handle_response(response) do
-    case response do
-      {:ok, %{status: 200, body: body}} -> {:ok, body}
-      {:ok, %{body: %{"error" => error}}} -> {:error, error}
-      error -> error
-    end
+  def list_subscriptions(token, params \\ []) do
+    client(token) |> HTTP.get("/subscriptions", query: params)
   end
 end

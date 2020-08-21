@@ -1,9 +1,9 @@
-defmodule WatchLater.Clock do
+defmodule WatchLater.Util.Clock do
   @callback current_timestamp() :: integer()
 end
 
-defmodule WatchLater.Clock.Real do
-  @behaviour WatchLater.Clock
+defmodule WatchLater.Util.Clock.Real do
+  @behaviour WatchLater.Util.Clock
 
   def current_timestamp() do
     :os.system_time(:second)

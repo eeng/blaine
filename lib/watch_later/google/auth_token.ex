@@ -2,7 +2,7 @@ defmodule WatchLater.Google.AuthToken do
   defstruct [:access_token, :refresh_token, :token_type, :generated_at, :expires_at]
 
   alias __MODULE__
-  alias WatchLater.Clock
+  alias WatchLater.Util.Clock
 
   def from_json(json, clock \\ Clock.Real) do
     generated_at = clock.current_timestamp()

@@ -2,7 +2,7 @@ defmodule WatchLater.Google.YouTubeAPI do
   alias WatchLater.Google.AuthToken
   alias WatchLater.Util.HTTP
 
-  defp client(%AuthToken{access_token: access_token, token_type: token_type}) do
+  def client(%AuthToken{access_token: access_token, token_type: token_type}) do
     HTTP.client(
       base_url: "https://www.googleapis.com/youtube/v3",
       headers: [{"Authorization", "#{token_type} #{access_token}"}]

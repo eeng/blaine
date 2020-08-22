@@ -4,7 +4,7 @@ defmodule WatchLater.Services.AccountsManager do
   @spec add_account(String.t(), Account.role()) :: {:ok, Account.t()} | {:error, any}
   def add_account(code, role) do
     with {:ok, token} <- auth_api().get_token(code),
-         profile <- fetch_profile(token),
+         {:ok, profile} <- people_api().me(token),
          account <- build_account(code, role, token, profile),
          :ok <- repo().add_account(repo(), account) do
       {:ok, account}
@@ -28,21 +28,7 @@ defmodule WatchLater.Services.AccountsManager do
     end
   end
 
-  defp fetch_profile(token) do
-    people_api().me(token, personFields: "names") |> extract_profile()
-  end
-
-  defp extract_profile({:ok, profile}) do
-    %{
-      "names" => [
-        %{"displayName" => name, "metadata" => %{"source" => %{"id" => id}}}
-      ]
-    } = profile
-
-    {id, name}
-  end
-
-  defp build_account(code, role, token, {id, name}) do
+  defp build_account(code, role, token, %{id: id, name: name}) do
     %Account{code: code, role: role, auth_token: token, id: id, name: name}
   end
 

@@ -14,7 +14,7 @@ defmodule WatchLater.Services.AccountsManagerTest do
   describe "add_account" do
     setup do
       MockAuthAPI |> stub(:get_token, fn _ -> {:ok, :token} end)
-      MockPeopleAPI |> stub(:me, fn _, _ -> {:ok, profile_response(1, "x")} end)
+      MockPeopleAPI |> stub(:me, fn _ -> profile_response(1, "x") end)
       MockAccountsRepository |> stub(:add_account, fn _, _ -> :ok end)
       :ok
     end
@@ -30,7 +30,7 @@ defmodule WatchLater.Services.AccountsManagerTest do
       response = profile_response("100", "Max")
 
       MockAuthAPI |> expect(:get_token, fn _ -> {:ok, "token"} end)
-      MockPeopleAPI |> expect(:me, fn "token", personFields: "names" -> {:ok, response} end)
+      MockPeopleAPI |> expect(:me, fn "token" -> response end)
 
       {:ok, account} = AccountsManager.add_account("code", :provider)
       assert %Account{id: "100", name: "Max"} = account
@@ -53,15 +53,6 @@ defmodule WatchLater.Services.AccountsManagerTest do
   end
 
   defp profile_response(id, name) do
-    %{
-      "names" => [
-        %{
-          "displayName" => name,
-          "metadata" => %{
-            "source" => %{"id" => id}
-          }
-        }
-      ]
-    }
+    {:ok, %{id: id, name: name}}
   end
 end

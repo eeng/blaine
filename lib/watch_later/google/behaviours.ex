@@ -7,6 +7,6 @@ defmodule WatchLater.Google.Behaviours do
   end
 
   defmodule PeopleAPI do
-    @callback me(%AuthToken{}, list) :: {:ok, any} | {:error, any}
+    @callback me(%AuthToken{}) :: {:ok, any} | {:error, any}
   end
 end

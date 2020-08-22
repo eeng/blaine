@@ -1,16 +1,27 @@
+defmodule WatchLater.Util.HTTP.Behaviour do
+  @callback client(list) :: struct
+  @callback get(struct, String.t(), list) :: {:ok, any} | {:error, any}
+  @callback post(struct, String.t(), list) :: {:ok, any} | {:error, any}
+end
+
 defmodule WatchLater.Util.HTTP do
+  @behaviour WatchLater.Util.HTTP.Behaviour
+
   defstruct base_url: "", headers: [], format: :json
 
   alias __MODULE__
 
+  @impl true
   def client(opts \\ []) do
     struct(HTTP, opts)
   end
 
+  @impl true
   def get(client, url, opts \\ []) do
     request(client, :get, url, opts)
   end
 
+  @impl true
   def post(client, url, opts \\ []) do
     request(client, :post, url, opts)
   end

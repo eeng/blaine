@@ -18,13 +18,20 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
       :ok = AccountsRepository.add_account(m, a1)
       assert [a1] = AccountsRepository.accounts(m)
       AccountsRepository.add_account(m, a2)
-      assert [a2, a1] = AccountsRepository.accounts(m)
+      assert [a1, a2] = AccountsRepository.accounts(m)
     end
 
     test "should persist the account", %{manager: m, db: db} do
-      a = build(:account, name: "X")
+      a = build(:account, id: "787", name: "X")
       :ok = AccountsRepository.add_account(m, a)
-      assert {:ok, [a]} = DB.fetch(db, :accounts)
+      assert {:ok, %{"787" => a}} = DB.fetch(db, :accounts)
+    end
+
+    test "should override the account if already exists by id", %{manager: m} do
+      a = build(:account, id: "454")
+      :ok = AccountsRepository.add_account(m, a)
+      :ok = AccountsRepository.add_account(m, a)
+      assert [a] = AccountsRepository.accounts(m)
     end
   end
 

@@ -9,6 +9,7 @@ defmodule WatchLater.Storage.AccountsRepository do
 
   alias WatchLater.Models.Account
   alias WatchLater.Storage.DB
+  alias WatchLater.Util
 
   @me __MODULE__
 
@@ -41,7 +42,7 @@ defmodule WatchLater.Storage.AccountsRepository do
         _ -> []
       end
 
-    {:ok, %State{accounts: accounts, db: db}}
+    {:ok, %State{accounts: Util.Map.by(accounts, :id), db: db}}
   end
 
   @impl true
@@ -51,14 +52,14 @@ defmodule WatchLater.Storage.AccountsRepository do
 
   @impl true
   def handle_call({:add_account, account}, _from, %{db: db, accounts: accounts} = state) do
-    new_accounts = [account | accounts]
+    new_accounts = accounts |> Map.put(account.id, account)
     :ok = DB.store(db, :accounts, new_accounts)
     {:reply, :ok, %{state | accounts: new_accounts}}
   end
 
   @impl true
   def handle_call({:get_accounts, role}, _from, %{accounts: accounts} = state) do
-    filtered = Enum.filter(accounts, &role_matches?(&1, role))
+    filtered = accounts |> Map.values() |> Enum.filter(&role_matches?(&1, role))
     {:reply, filtered, state}
   end
 

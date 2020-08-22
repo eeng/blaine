@@ -3,10 +3,13 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
 
   import WatchLater.Factory
   alias WatchLater.Storage.AccountsRepository
+  alias WatchLater.Storage.DB
 
   setup context do
     manager = start_supervised!({AccountsRepository, name: context.test})
-    %{manager: manager}
+    %{db: db} = :sys.get_state(context.test)
+    on_exit(fn -> DB.destroy(db) end)
+    %{manager: manager, db: db}
   end
 
   describe "add_account" do
@@ -17,6 +20,12 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
       AccountsRepository.add_account(m, a2)
       assert [a2, a1] = AccountsRepository.accounts(m)
     end
+
+    test "should persiste the account", %{manager: m, db: db} do
+      a = build(:account, name: "X")
+      :ok = AccountsRepository.add_account(m, a)
+      assert {:ok, [a]} = DB.fetch(db, :accounts)
+    end
   end
 
   describe "accounts" do
@@ -26,6 +35,16 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
       AccountsRepository.add_account(m, a1)
       AccountsRepository.add_account(m, a2)
       assert [%{name: "B"}] = AccountsRepository.accounts(m, :watcher)
+    end
+  end
+
+  describe "init" do
+    test "should restore the persisted accounts", %{manager: m, db: db, test: test} do
+      a = build(:account)
+      DB.store(db, :accounts, [a])
+      GenServer.stop(m)
+      :timer.sleep(1)
+      assert [a] = Process.whereis(test) |> AccountsRepository.accounts()
     end
   end
 end

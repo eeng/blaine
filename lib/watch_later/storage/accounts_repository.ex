@@ -8,16 +8,17 @@ defmodule WatchLater.Storage.AccountsRepository do
   use GenServer
 
   alias WatchLater.Models.Account
+  alias WatchLater.Storage.DB
 
   @me __MODULE__
+
+  defmodule State do
+    defstruct [:accounts, :db]
+  end
 
   def start_link(opts) do
     name = Keyword.get(opts, :name, @me)
     GenServer.start_link(@me, [], name: name)
-  end
-
-  def stop(manager) do
-    GenServer.stop(manager)
   end
 
   @impl true
@@ -32,25 +33,30 @@ defmodule WatchLater.Storage.AccountsRepository do
 
   @impl true
   def init(_) do
-    Process.flag(:trap_exit, true)
-    {:ok, []}
-  end
-
-  # @impl true
-  # def terminate(_reason, accounts) do
-  #   repo().store_accounts(accounts)
-  #   repo().close()
-  # end
-
-  @impl true
-  def handle_call({:add_account, account}, _from, accounts) do
-    {:reply, :ok, [account | accounts]}
+    {:ok, db} = DB.open()
+    accounts = case DB.fetch(db, :accounts) do
+      {:ok, accounts} -> accounts
+      _ -> []
+    end
+    {:ok, %State{accounts: accounts, db: db}}
   end
 
   @impl true
-  def handle_call({:get_accounts, role}, _from, accounts) do
+  def terminate(_reason, %{db: db}) do
+    DB.close(db)
+  end
+
+  @impl true
+  def handle_call({:add_account, account}, _from, %{db: db, accounts: accounts} = state) do
+    new_accounts = [account | accounts]
+    :ok = DB.store(db, :accounts, new_accounts)
+    {:reply, :ok, %{state | accounts: new_accounts}}
+  end
+
+  @impl true
+  def handle_call({:get_accounts, role}, _from, %{accounts: accounts} = state) do
     filtered = Enum.filter(accounts, &role_matches?(&1, role))
-    {:reply, filtered, accounts}
+    {:reply, filtered, state}
   end
 
   defp role_matches?(_, :both), do: true

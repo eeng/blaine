@@ -1,15 +1,14 @@
 defmodule WatchLater.Storage.AccountsRepository.Behaviour do
-  @callback add_account(Account.t()) :: :ok | {:error, any}
-  @callback accounts(Account.role()) :: [Account.t()]
+  @callback add_account(any, Account.t()) :: :ok | {:error, any}
+  @callback accounts(any, Account.role()) :: [Account.t()]
 end
 
 defmodule WatchLater.Storage.AccountsRepository do
   @behaviour WatchLater.Storage.AccountsRepository.Behaviour
   use GenServer
 
-  alias WatchLater.Models.Account
+  alias WatchLater.Entities.Account
   alias WatchLater.Storage.DB
-  alias WatchLater.Util
 
   @me __MODULE__
 
@@ -23,13 +22,13 @@ defmodule WatchLater.Storage.AccountsRepository do
   end
 
   @impl true
-  def add_account(manager \\ @me, account) do
-    GenServer.call(manager, {:add_account, account})
+  def add_account(server, account) do
+    GenServer.call(server, {:add_account, account})
   end
 
   @impl true
-  def accounts(manager \\ @me, role \\ :both) do
-    GenServer.call(manager, {:get_accounts, role})
+  def accounts(server, role \\ :both) do
+    GenServer.call(server, {:get_accounts, role})
   end
 
   @impl true
@@ -39,10 +38,10 @@ defmodule WatchLater.Storage.AccountsRepository do
     accounts =
       case DB.fetch(db, :accounts) do
         {:ok, accounts} -> accounts
-        _ -> []
+        _ -> %{}
       end
 
-    {:ok, %State{accounts: Util.Map.by(accounts, :id), db: db}}
+    {:ok, %State{accounts: accounts, db: db}}
   end
 
   @impl true

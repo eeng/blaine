@@ -1,5 +1,5 @@
 defmodule WatchLater.Factory do
-  alias WatchLater.Models.Account
+  alias WatchLater.Entities.Account
 
   def build(:account) do
     %Account{id: to_string(sequence()), role: :both}

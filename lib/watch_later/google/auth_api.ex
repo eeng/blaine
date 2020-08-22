@@ -40,16 +40,20 @@ defmodule WatchLater.Google.AuthAPI do
   end
 
   @impl true
-  def renew_token(%AuthToken{refresh_token: refresh_token}) do
-    body = %{
-      client_id: config(:client_id),
-      client_secret: config(:client_secret),
-      refresh_token: refresh_token,
-      grant_type: "refresh_token"
-    }
+  def renew_token(%AuthToken{refresh_token: refresh_token} = token) do
+    if AuthToken.must_renew?(token) do
+      body = %{
+        client_id: config(:client_id),
+        client_secret: config(:client_secret),
+        refresh_token: refresh_token,
+        grant_type: "refresh_token"
+      }
 
-    with {:ok, body} <- HTTP.post(client(), "/token", body: body) do
-      {:ok, AuthToken.from_json(body) |> Map.put(:refresh_token, refresh_token)}
+      with {:ok, body} <- HTTP.post(client(), "/token", body: body) do
+        {:ok, AuthToken.from_json(body) |> Map.put(:refresh_token, refresh_token)}
+      end
+    else
+      :still_valid
     end
   end
 end

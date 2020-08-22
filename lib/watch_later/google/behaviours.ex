@@ -3,7 +3,7 @@ defmodule WatchLater.Google.Behaviours do
 
   defmodule AuthAPI do
     @callback get_token(String.t()) :: {:ok, %AuthToken{}} | {:error, any}
-    @callback renew_token(%AuthToken{}) :: {:ok, %AuthToken{}} | {:error, any}
+    @callback renew_token(%AuthToken{}) :: {:ok, %AuthToken{}} | {:error, any} | :still_valid
   end
 
   defmodule PeopleAPI do

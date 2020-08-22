@@ -47,8 +47,8 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
 
   describe "init" do
     test "should restore the persisted accounts", %{manager: m, db: db, test: test} do
-      a = build(:account)
-      DB.store(db, :accounts, [a])
+      a = build(:account, id: "121")
+      DB.store(db, :accounts, %{"121" => a})
       GenServer.stop(m)
       :timer.sleep(1)
       assert [a] = Process.whereis(test) |> AccountsRepository.accounts()

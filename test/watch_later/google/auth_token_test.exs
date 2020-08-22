@@ -15,4 +15,13 @@ defmodule WatchLater.Google.AuthTokenTest do
                AuthToken.from_json(%{"expires_in" => 3599}, MockClock)
     end
   end
+
+  describe "must_renew?" do
+    test "the token should be renewed a few seconds before the expiration" do
+      now = 1_598_127_159
+      MockClock |> stub(:current_timestamp, fn -> now end)
+      assert AuthToken.must_renew?(%AuthToken{expires_at: now + 29}, MockClock)
+      refute AuthToken.must_renew?(%AuthToken{expires_at: now + 31}, MockClock)
+    end
+  end
 end

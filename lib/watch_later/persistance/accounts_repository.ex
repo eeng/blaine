@@ -1,5 +1,5 @@
 defmodule WatchLater.Persistance.AccountsRepository do
-  alias WatchLater.Models.Account
+  alias WatchLater.Entities.Account
 
   @type state :: [Account.t()]
 

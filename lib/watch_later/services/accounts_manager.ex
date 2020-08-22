@@ -34,7 +34,7 @@ defmodule WatchLater.Services.AccountsManager do
     %Account{code: code, role: role, auth_token: token, id: id, name: name}
   end
 
-  defp auth_api(), do: Application.get_env(:watch_later, :google_auth_api)
-  defp people_api(), do: Application.get_env(:watch_later, :google_people_api)
-  defp repo(), do: Application.get_env(:watch_later, :accounts_repo)
+  defp auth_api(), do: Application.get_env(:watch_later, :components)[:google_auth_api]
+  defp people_api(), do: Application.get_env(:watch_later, :components)[:google_people_api]
+  defp repo(), do: Application.get_env(:watch_later, :components)[:accounts_repo]
 end

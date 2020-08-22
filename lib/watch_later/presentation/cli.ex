@@ -2,7 +2,7 @@ defmodule WatchLater.Presentation.CLI do
   alias WatchLater.Google.AuthAPI
   alias WatchLater.Services.AccountsManager
 
-  def authorize do
+  def add_account(role) do
     scopes = ~w(
       https://www.googleapis.com/auth/userinfo.profile
       https://www.googleapis.com/auth/youtube.readonly
@@ -15,6 +15,6 @@ defmodule WatchLater.Presentation.CLI do
 
     code = IO.gets("Then paste the code here: ") |> String.trim()
 
-    AccountsManager.add_account(code, :provider)
+    AccountsManager.add_account(code, role)
   end
 end

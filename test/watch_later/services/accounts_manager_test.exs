@@ -48,8 +48,8 @@ defmodule WatchLater.Services.AccountsManagerTest do
     end
   end
 
-  defp start_manager(_) do
-    manager = start_supervised!({AccountsManager, name: :testing_only})
+  defp start_manager(context) do
+    manager = start_supervised!({AccountsManager, name: context.test})
     %{manager: manager}
   end
 

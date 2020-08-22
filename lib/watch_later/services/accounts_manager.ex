@@ -24,8 +24,15 @@ defmodule WatchLater.Services.AccountsManager do
   end
 
   @impl true
-  def init(accounts) do
-    {:ok, accounts}
+  def init(_) do
+    Process.flag(:trap_exit, true)
+    {:ok, repo().fetch_accounts()}
+  end
+
+  @impl true
+  def terminate(_reason, accounts) do
+    repo().store_accounts(accounts)
+    repo().close()
   end
 
   @impl true
@@ -66,4 +73,5 @@ defmodule WatchLater.Services.AccountsManager do
 
   defp auth_api(), do: Application.get_env(:watch_later, :google_auth_api)
   defp people_api(), do: Application.get_env(:watch_later, :google_people_api)
+  defp repo(), do: Application.get_env(:watch_later, :accounts_repo)
 end

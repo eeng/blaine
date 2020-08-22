@@ -13,7 +13,7 @@ defmodule WatchLater.Google.PeopleAPI do
 
   # Requires scope https://www.googleapis.com/auth/userinfo.profile
   @impl true
-  def me(token, params \\ []) do
+  def me(token, params) do
     client(token) |> HTTP.get("/people/me", query: params)
   end
 end

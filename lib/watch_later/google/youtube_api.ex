@@ -10,7 +10,7 @@ defmodule WatchLater.Google.YouTubeAPI do
   end
 
   # Requires scope https://www.googleapis.com/auth/youtube.readonly
-  def list_subscriptions(token, params \\ []) do
+  def list_subscriptions(token, params) do
     client(token) |> HTTP.get("/subscriptions", query: params)
   end
 end

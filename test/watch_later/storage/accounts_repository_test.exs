@@ -21,7 +21,7 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
       assert [a2, a1] = AccountsRepository.accounts(m)
     end
 
-    test "should persiste the account", %{manager: m, db: db} do
+    test "should persist the account", %{manager: m, db: db} do
       a = build(:account, name: "X")
       :ok = AccountsRepository.add_account(m, a)
       assert {:ok, [a]} = DB.fetch(db, :accounts)

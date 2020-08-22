@@ -34,10 +34,13 @@ defmodule WatchLater.Storage.AccountsRepository do
   @impl true
   def init(_) do
     {:ok, db} = DB.open()
-    accounts = case DB.fetch(db, :accounts) do
-      {:ok, accounts} -> accounts
-      _ -> []
-    end
+
+    accounts =
+      case DB.fetch(db, :accounts) do
+        {:ok, accounts} -> accounts
+        _ -> []
+      end
+
     {:ok, %State{accounts: accounts, db: db}}
   end
 

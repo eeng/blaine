@@ -1,8 +1,13 @@
 defmodule WatchLater.Factory do
   alias WatchLater.Entities.Account
+  alias WatchLater.Google.AuthToken
 
   def build(:account) do
     %Account{id: to_string(sequence()), role: :both}
+  end
+
+  def build(:auth_token) do
+    %AuthToken{access_token: "QuEWgBnoMGCM0O"}
   end
 
   def build(factory, quantity) when is_integer(quantity) do

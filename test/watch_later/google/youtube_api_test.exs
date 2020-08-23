@@ -54,12 +54,12 @@ defmodule WatchLater.Google.YouTubeAPITest do
       assert {:ok,
               [
                 %{
-                  id: "DMfFnnrJ7xA",
+                  video_id: "DMfFnnrJ7xA",
                   published_at: ~U[2020-08-20 21:04:16Z],
                   title: "Android Beyond Phones, chromeos.dev, Go 1.15, and more!"
                 },
                 %{
-                  id: "S0RiTTbhVBE",
+                  video_id: "S0RiTTbhVBE",
                   published_at: ~U[2020-08-18T16:01:15Z],
                   title: "Join us for the Developer Student Clubs 2020 Solution Challenge!"
                 }

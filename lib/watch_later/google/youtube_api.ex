@@ -61,7 +61,7 @@ defmodule WatchLater.Google.YouTubeAPI do
             "snippet" => %{"title" => title}
           } <- items do
         {:ok, published_at, _} = DateTime.from_iso8601(published_at)
-        %{id: id, published_at: published_at, title: title}
+        %{video_id: id, published_at: published_at, title: title}
       end
 
     {:ok, videos}

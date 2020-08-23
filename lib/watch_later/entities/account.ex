@@ -1,5 +1,5 @@
 defmodule WatchLater.Entities.Account do
-  defstruct [:code, :role, :id, :name, :auth_token]
+  defstruct [:id, :name, :role, :auth_token, :code]
 
   alias __MODULE__
 

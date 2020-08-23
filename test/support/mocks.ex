@@ -8,6 +8,7 @@ Mox.defmock(WatchLater.Storage.MockAccountsRepository,
 
 Mox.defmock(WatchLater.Google.MockAuthAPI, for: WatchLater.Google.Behaviours.AuthAPI)
 Mox.defmock(WatchLater.Google.MockPeopleAPI, for: WatchLater.Google.Behaviours.PeopleAPI)
+Mox.defmock(WatchLater.Google.MockYouTubeAPI, for: WatchLater.Google.Behaviours.YouTubeAPI)
 
 Mox.defmock(WatchLater.Util.MockHTTP, for: WatchLater.Util.HTTP.Behaviour)
 Mox.defmock(WatchLater.MockClock, for: WatchLater.Util.Clock.Behaviour)

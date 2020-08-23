@@ -20,12 +20,15 @@ defmodule WatchLater.Google.PeopleAPI do
 
   @impl true
   def me(token) do
-    client(token) |> http().get("/people/me", query: [personFields: "names"]) |> extract_profile()
+    client(token)
+    |> http().get("/people/me", query: [personFields: "names,emailAddresses"])
+    |> extract_profile()
   end
 
-  defp extract_profile({:ok, %{"names" => names}}) do
+  defp extract_profile({:ok, %{"names" => names, "emailAddresses" => emails}}) do
     [%{"displayName" => name, "metadata" => %{"source" => %{"id" => id}}}] = names
-    {:ok, %{id: id, name: name}}
+    [%{"value" => email}] = emails
+    {:ok, %{id: id, name: name, email: email}}
   end
 
   defp extract_profile(response), do: response

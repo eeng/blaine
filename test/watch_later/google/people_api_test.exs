@@ -18,9 +18,10 @@ defmodule WatchLater.Google.PeopleAPITest do
   describe "me" do
     test "returns the user's id and name" do
       response = fixture("people/me.json")
-      q = [personFields: "names"]
+      q = [personFields: "names,emailAddresses"]
       MockHTTP |> expect(:get, fn _, "/people/me", query: ^q -> {:ok, response} end)
-      assert {:ok, %{id: "104589733694719471688", name: "Max Payne"}} = PeopleAPI.me(@token)
+      assert {:ok, profile} = PeopleAPI.me(@token)
+      assert %{id: "104589733694719471688", name: "Max Payne", email: "max@payne.com"} = profile
     end
 
     test "when an error occours, should return it as is" do

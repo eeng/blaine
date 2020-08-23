@@ -16,5 +16,18 @@
       "displayNameLastFirst": "Payne, Max",
       "unstructuredName": "Max Payne"
     }
+  ],
+  "emailAddresses": [
+    {
+      "metadata": {
+        "primary": true,
+        "verified": true,
+        "source": {
+          "type": "ACCOUNT",
+          "id": "109589730004719456600"
+        }
+      },
+      "value": "max@payne.com"
+    }
   ]
 }

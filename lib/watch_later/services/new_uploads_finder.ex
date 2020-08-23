@@ -2,7 +2,7 @@ defmodule WatchLater.Services.NewUploadsFinder do
   @moduledoc """
   This module is responsible for retrieving the latest uploads through the YouTube API.
   """
-  alias WatchLater.Entities.Video
+  alias WatchLater.Entities.{Video, Channel}
 
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
   defp youtube_api(), do: Application.get_env(:watch_later, :components)[:google_youtube_api]
@@ -21,14 +21,16 @@ defmodule WatchLater.Services.NewUploadsFinder do
     end
   end
 
-  def find_new_uploads_for_channel(token, %{channel_id: channel_id}) do
+  def find_new_uploads_for_channel(token, %{channel_id: channel_id} = sub) do
     {:ok, playlist_id} = youtube_api().get_uploads_playlist_id(token, channel_id)
     {:ok, videos} = youtube_api().list_videos(token, playlist_id)
-    videos |> Enum.map(&to_video/1)
+    videos |> Enum.map(&to_video(&1, sub))
   end
 
-  defp to_video(%{video_id: id} = fields) do
-    struct(Video, fields) |> Map.put(:id, id)
+  defp to_video(%{video_id: id} = fields, %{title: channel_name, channel_id: channel_id}) do
+    struct(Video, fields)
+    |> Map.put(:id, id)
+    |> Map.put(:channel, %Channel{name: channel_name, id: channel_id})
   end
 
   def filter_and_sort_videos(videos, opts) do

@@ -5,7 +5,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
   import WatchLater.Factory
   alias WatchLater.Services.NewUploadsFinder
   alias WatchLater.Google.MockYouTubeAPI
-  alias WatchLater.Entities.Video
+  alias WatchLater.Entities.{Video, Channel}
 
   setup :verify_on_exit!
 
@@ -15,7 +15,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
     test "should query the correct YouTube API endpoints" do
       account = build(:account, auth_token: @token)
 
-      subscriptions = [%{channel_id: "ch1"}, %{channel_id: "ch2"}]
+      subscriptions = [%{channel_id: "ch1", title: "C1"}, %{channel_id: "ch2", title: "C2"}]
 
       videos_ch1 = [
         %{video_id: "v1", published_at: ~U[2020-07-15 00:00:00Z]},
@@ -31,7 +31,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       |> expect(:list_videos, fn @token, "pl1" -> {:ok, videos_ch1} end)
       |> expect(:list_videos, fn @token, "pl2" -> {:ok, videos_ch2} end)
 
-      assert [%Video{id: "v1"}, %Video{id: "v2"}, %Video{id: "v3"}] =
+      assert [%Video{id: "v1", channel: %Channel{name: "C1"}}, %Video{id: "v2"}, %Video{id: "v3"}] =
                NewUploadsFinder.find_new_uploads_for_account(account)
     end
   end

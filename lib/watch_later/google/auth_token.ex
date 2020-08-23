@@ -4,6 +4,12 @@ defmodule WatchLater.Google.AuthToken do
   alias __MODULE__
   alias WatchLater.Util.Clock
 
+  @type t :: %AuthToken{
+          access_token: String.t(),
+          refresh_token: String.t(),
+          expires_at: integer()
+        }
+
   def from_json(json, clock \\ Clock) do
     generated_at = clock.current_timestamp()
 

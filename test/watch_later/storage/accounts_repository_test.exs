@@ -6,10 +6,11 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
   alias WatchLater.Storage.DB
 
   setup context do
-    manager = start_supervised!({AccountsRepository, name: context.test})
-    %{db: db} = :sys.get_state(context.test)
+    process_name = context.test
+    manager = start_supervised!({AccountsRepository, name: process_name})
+    %{db: db} = :sys.get_state(process_name)
     on_exit(fn -> DB.destroy(db) end)
-    %{manager: manager, db: db}
+    %{manager: manager, db: db, process_name: context.test}
   end
 
   describe "add_account" do
@@ -46,12 +47,17 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
   end
 
   describe "init" do
-    test "should restore the persisted accounts", %{manager: m, db: db, test: test} do
+    test "should restore the persisted accounts", %{db: db, process_name: process_name} do
       a = build(:account, id: "121")
       DB.store(db, :accounts, %{"121" => a})
-      GenServer.stop(m)
-      :timer.sleep(1)
-      assert [a] = Process.whereis(test) |> AccountsRepository.accounts()
+      pid = stop_process_and_get_new_pid(process_name)
+      assert [a] = AccountsRepository.accounts(pid)
     end
+  end
+
+  def stop_process_and_get_new_pid(process_name) do
+    GenServer.stop(process_name)
+    :timer.sleep(1)
+    Process.whereis(process_name)
   end
 end

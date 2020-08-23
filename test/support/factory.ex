@@ -1,9 +1,13 @@
 defmodule WatchLater.Factory do
-  alias WatchLater.Entities.Account
+  alias WatchLater.Entities.{Account, Video}
   alias WatchLater.Google.AuthToken
 
   def build(:account) do
     %Account{id: to_string(sequence()), role: :both}
+  end
+
+  def build(:video) do
+    %Video{id: to_string(sequence()), published_at: DateTime.utc_now()}
   end
 
   def build(:auth_token) do

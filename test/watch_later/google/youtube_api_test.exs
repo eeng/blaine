@@ -35,13 +35,35 @@ defmodule WatchLater.Google.YouTubeAPITest do
   end
 
   describe "get_uploads_playlist_id" do
-    test "should return the id of the uploads playlist for the channel" do
+    test "should get the id of the uploads playlist for the channel" do
       response = fixture("youtube/list_channels.json")
-      q = [id: "UC_x5XG1OV2P6uZZ5FSM9Ttw", part: "contentDetails"]
+      q = [id: "UC2DjFE7Xf11URZqWBigcVOQ", part: "contentDetails"]
       MockHTTP |> expect(:get, fn _, "/channels", query: ^q -> {:ok, response} end)
 
       assert {:ok, "UU_x5XG1OV2P6uZZ5FSM9Ttw"} =
                YouTubeAPI.get_uploads_playlist_id(@token, q[:id])
+    end
+  end
+
+  describe "list_videos" do
+    test "should find the id of the lastest videos in the playlist" do
+      response = fixture("youtube/list_playlist_items.json")
+      q = [playlistId: "UC_x5XG1OV2P6uZZ5FSM9Ttw", part: "snippet,contentDetails", maxResults: 50]
+      MockHTTP |> expect(:get, fn _, "/playlistItems", query: ^q -> {:ok, response} end)
+
+      assert {:ok,
+              [
+                %{
+                  id: "DMfFnnrJ7xA",
+                  published_at: ~U[2020-08-20 21:04:16Z],
+                  title: "Android Beyond Phones, chromeos.dev, Go 1.15, and more!"
+                },
+                %{
+                  id: "S0RiTTbhVBE",
+                  published_at: ~U[2020-08-18T16:01:15Z],
+                  title: "Join us for the Developer Student Clubs 2020 Solution Challenge!"
+                }
+              ]} = YouTubeAPI.list_videos(@token, q[:playlistId])
     end
   end
 

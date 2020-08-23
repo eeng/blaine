@@ -2,9 +2,9 @@ defmodule WatchLater.Google.AuthAPI do
   @behaviour WatchLater.Google.Behaviours.AuthAPI
 
   alias WatchLater.Google.AuthToken
-  alias WatchLater.Util.HTTP
 
   defp config(key), do: Application.get_env(:watch_later, __MODULE__)[key]
+  defp http(), do: Application.get_env(:watch_later, :components)[:http_client]
 
   def authorize_url(params) do
     defaults = %{
@@ -18,7 +18,7 @@ defmodule WatchLater.Google.AuthAPI do
   end
 
   defp client() do
-    HTTP.client(
+    http().client(
       base_url: "https://oauth2.googleapis.com",
       format: :form_request_json_response
     )
@@ -34,7 +34,7 @@ defmodule WatchLater.Google.AuthAPI do
       grant_type: "authorization_code"
     }
 
-    with {:ok, body} <- HTTP.post(client(), "/token", body: body) do
+    with {:ok, body} <- http().post(client(), "/token", body: body) do
       {:ok, AuthToken.from_json(body)}
     end
   end
@@ -49,7 +49,7 @@ defmodule WatchLater.Google.AuthAPI do
         grant_type: "refresh_token"
       }
 
-      with {:ok, body} <- HTTP.post(client(), "/token", body: body) do
+      with {:ok, body} <- http().post(client(), "/token", body: body) do
         {:ok, AuthToken.from_json(body) |> Map.put(:refresh_token, refresh_token)}
       end
     else

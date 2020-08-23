@@ -1,0 +1,109 @@
+{
+  "kind": "youtube#playlistItemListResponse",
+  "etag": "9Wme-pAWdXpRXpSo_dsfrdoZ31s",
+  "nextPageToken": "CAIQAA",
+  "items": [
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "Wvg2Wj-5c946I5TQHusibf522Y4",
+      "id": "VVVfeDVYRzFPVjJQNnVaWjVGU005VHR3LjU2QjQ0RjZEMTA1NTdDQzY=",
+      "snippet": {
+        "publishedAt": "2020-08-20T20:39:23Z",
+        "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+        "title": "Android Beyond Phones, chromeos.dev, Go 1.15, and more!",
+        "description": "TL;DR 215 | The Google Developer News Show\n \n0:00 11 Weeks of Android: Beyond Phones → https://goo.gle/3l0BbTo  \n0:57 Go 1.15 is released → https://goo.gle/2FGTAEz \n1:18 Data analytics for all—What happened at Week 5, Google Cloud Next ‘20: OnAir → https://goo.gle/2EjfywM  \n2:00 On-device, Real-time Body Pose Tracking with MediaPipe BlazePose → https://goo.gle/2Yct3FB  \n2:31 Even Faster Mobile GPU Inference with OpenCL → https://goo.gle/31e48mI \n3:00 ChromeOS.dev — A blueprint to build world-class apps and games for Chrome OS → https://goo.gle/2QbmXAY  \n3:20 Please remember to like, subscribe, and share!\n\nHere to bring you the latest developer news from across Google is Developer Advocate Laurence Moroney. Tune in every week for a new episode, and let us know what you think of the latest announcements in the comments below! 😃\n\nFollow Google Developers on Instagram → https://goo.gle/googledevs      \n\nWatch more #DevShow → https://goo.gle/GDevShow       \nSubscribe to Google Developers → https://goo.gle/developers",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/DMfFnnrJ7xA/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/DMfFnnrJ7xA/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/DMfFnnrJ7xA/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/DMfFnnrJ7xA/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/DMfFnnrJ7xA/maxresdefault.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Google Developers",
+        "playlistId": "UU_x5XG1OV2P6uZZ5FSM9Ttw",
+        "position": 0,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "DMfFnnrJ7xA"
+        }
+      },
+      "contentDetails": {
+        "videoId": "DMfFnnrJ7xA",
+        "videoPublishedAt": "2020-08-20T21:04:16Z"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "FHUrRWJYC_o-lLlP1MY4Uj2iVWs",
+      "id": "VVVfeDVYRzFPVjJQNnVaWjVGU005VHR3LjI4OUY0QTQ2REYwQTMwRDI=",
+      "snippet": {
+        "publishedAt": "2020-08-17T21:30:58Z",
+        "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+        "title": "Join us for the Developer Student Clubs 2020 Solution Challenge!",
+        "description": "Join us for the 2020 Solution Challenge Demo Day hosted by Developer Student Clubs. We will showcase the top 10 winning teams and their solutions! You will get a chance to ask questions directly to these teams and learn more about the awesome Google technology behind their solutions.\n\nMark your calendars for August 26 at 8 AM - 10 AM PT!\n\nDSC 2020 Solution Challenge Demo Day livestream → https://goo.gle/311QMKB \nMore information about the Solution Challenge → https://goo.gle/solutionchallenge \nMore information about Developer Student Clubs → https://g.co/dev/dsc \n\nSubscribe to Google Developers → https://goo.gle/developers",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/S0RiTTbhVBE/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/S0RiTTbhVBE/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/S0RiTTbhVBE/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/S0RiTTbhVBE/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/S0RiTTbhVBE/maxresdefault.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Google Developers",
+        "playlistId": "UU_x5XG1OV2P6uZZ5FSM9Ttw",
+        "position": 1,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "S0RiTTbhVBE"
+        }
+      },
+      "contentDetails": {
+        "videoId": "S0RiTTbhVBE",
+        "videoPublishedAt": "2020-08-18T16:01:15Z"
+      }
+    }
+  ],
+  "pageInfo": {
+    "totalResults": 5204,
+    "resultsPerPage": 2
+  }
+}

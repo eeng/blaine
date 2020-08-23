@@ -11,7 +11,7 @@ defmodule WatchLater.Google.YouTubeAPI do
   end
 
   # Requires scope https://www.googleapis.com/auth/youtube.readonly
-  @spec my_subscriptions(%AuthToken{}) :: [map]
+  @spec my_subscriptions(%AuthToken{}) :: {:ok, [map]} | {:error, any}
   def my_subscriptions(token) do
     client(token)
     |> http().get("/subscriptions", query: [mine: true, part: "snippet", maxResults: 50])
@@ -30,7 +30,7 @@ defmodule WatchLater.Google.YouTubeAPI do
 
   defp extract_subscriptions(response), do: response
 
-  @spec get_uploads_playlist_id(%AuthToken{}, String.t()) :: String.t()
+  @spec get_uploads_playlist_id(%AuthToken{}, String.t()) :: {:ok, String.t()} | {:error, any}
   def get_uploads_playlist_id(token, channel_id) do
     client(token)
     |> http().get("/channels", query: [id: channel_id, part: "contentDetails"])
@@ -44,5 +44,27 @@ defmodule WatchLater.Google.YouTubeAPI do
 
   defp extract_uploads_playlist_id(response), do: response
 
-  # Google.YouTubeAPI.client(t) |> Util.HTTP.get("/playlistItems", query: [playlistId: "UU_x5XG1OV2P6uZZ5FSM9Ttw", part: "snippet", maxResults: 50])
+  @spec list_videos(%AuthToken{}, String.t()) :: {:ok, String.t()} | {:error, any}
+  def list_videos(token, playlist_id) do
+    q = [playlistId: playlist_id, part: "snippet,contentDetails", maxResults: 50]
+
+    client(token)
+    |> http().get("/playlistItems", query: q)
+    |> extract_videos()
+  end
+
+  defp extract_videos({:ok, %{"items" => items}}) do
+    videos =
+      for %{
+            "contentDetails" => %{"videoId" => id, "videoPublishedAt" => published_at},
+            "snippet" => %{"title" => title}
+          } <- items do
+        {:ok, published_at, _} = DateTime.from_iso8601(published_at)
+        %{id: id, published_at: published_at, title: title}
+      end
+
+    {:ok, videos}
+  end
+
+  defp extract_videos(response), do: response
 end

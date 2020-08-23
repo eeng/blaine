@@ -1,4 +1,6 @@
 defmodule WatchLater.Google.YouTubeAPI do
+  @behaviour WatchLater.Google.Behaviours.YouTubeAPI
+
   alias WatchLater.Google.AuthToken
 
   defp http(), do: Application.get_env(:watch_later, :components)[:http_client]
@@ -10,8 +12,7 @@ defmodule WatchLater.Google.YouTubeAPI do
     )
   end
 
-  # Requires scope https://www.googleapis.com/auth/youtube.readonly
-  @spec my_subscriptions(%AuthToken{}) :: {:ok, [map]} | {:error, any}
+  @impl true
   def my_subscriptions(token) do
     client(token)
     |> http().get("/subscriptions", query: [mine: true, part: "snippet", maxResults: 50])
@@ -30,7 +31,7 @@ defmodule WatchLater.Google.YouTubeAPI do
 
   defp extract_subscriptions(response), do: response
 
-  @spec get_uploads_playlist_id(%AuthToken{}, String.t()) :: {:ok, String.t()} | {:error, any}
+  @impl true
   def get_uploads_playlist_id(token, channel_id) do
     client(token)
     |> http().get("/channels", query: [id: channel_id, part: "contentDetails"])
@@ -44,7 +45,7 @@ defmodule WatchLater.Google.YouTubeAPI do
 
   defp extract_uploads_playlist_id(response), do: response
 
-  @spec list_videos(%AuthToken{}, String.t()) :: {:ok, String.t()} | {:error, any}
+  @impl true
   def list_videos(token, playlist_id) do
     q = [playlistId: playlist_id, part: "snippet,contentDetails", maxResults: 50]
 

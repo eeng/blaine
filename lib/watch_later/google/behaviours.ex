@@ -9,4 +9,11 @@ defmodule WatchLater.Google.Behaviours do
   defmodule PeopleAPI do
     @callback me(%AuthToken{}) :: {:ok, any} | {:error, any}
   end
+
+  defmodule YouTubeAPI do
+    @callback my_subscriptions(%AuthToken{}) :: {:ok, [map]} | {:error, any}
+    @callback get_uploads_playlist_id(%AuthToken{}, String.t()) ::
+                {:ok, String.t()} | {:error, any}
+    @callback list_videos(%AuthToken{}, String.t()) :: {:ok, String.t()} | {:error, any}
+  end
 end

@@ -12,7 +12,6 @@ defmodule WatchLater.Google.PeopleAPI do
     )
   end
 
-  # Requires scope https://www.googleapis.com/auth/userinfo.profile
   @impl true
   def me(token) do
     client(token) |> http().get("/people/me", query: [personFields: "names"]) |> extract_profile()

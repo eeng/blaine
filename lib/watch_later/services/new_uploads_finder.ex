@@ -32,7 +32,7 @@ defmodule WatchLater.Services.NewUploadsFinder do
   end
 
   def filter_and_sort_videos(videos, opts) do
-    videos = videos |> Enum.sort_by(& &1.published_at, {:desc, DateTime})
+    videos = videos |> Enum.sort_by(& &1.published_at, DateTime)
     Enum.reduce(opts, videos, &filter_by/2)
   end
 

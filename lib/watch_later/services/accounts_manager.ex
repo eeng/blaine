@@ -2,6 +2,7 @@ defmodule WatchLater.Services.AccountsManager.Behaviour do
   alias WatchLater.Entities.Account
 
   @callback add_account(String.t(), Account.role()) :: {:ok, Account.t()} | {:error, any}
+  @callback remove_account(String.t()) :: :ok
   @callback accounts(Account.role() | :both) :: [Account.t()]
 end
 
@@ -28,6 +29,11 @@ defmodule WatchLater.Services.AccountsManager do
   end
 
   @impl true
+  def remove_account(id) do
+    repo().remove_account(repo(), id)
+  end
+
+  @impl true
   def accounts(role \\ :both) do
     repo().accounts(repo(), role) |> Enum.map(&renew_token_if_necessary/1)
   end
@@ -44,8 +50,9 @@ defmodule WatchLater.Services.AccountsManager do
     end
   end
 
-  defp build_account(code, role, token, %{id: id, name: name}) do
-    %Account{code: code, role: role, auth_token: token, id: id, name: name}
+  defp build_account(code, role, token, profile) do
+    %Account{code: code, role: role, auth_token: token}
+    |> struct(profile)
   end
 
   defp auth_api(), do: Application.get_env(:watch_later, :components)[:google_auth_api]

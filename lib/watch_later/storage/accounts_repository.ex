@@ -1,5 +1,6 @@
 defmodule WatchLater.Storage.AccountsRepository.Behaviour do
-  @callback add_account(any, Account.t()) :: :ok | {:error, any}
+  @callback add_account(any, Account.t()) :: :ok
+  @callback remove_account(any, String.t()) :: :ok
   @callback accounts(any, Account.role()) :: [Account.t()]
 end
 
@@ -31,6 +32,11 @@ defmodule WatchLater.Storage.AccountsRepository do
   end
 
   @impl true
+  def remove_account(server, id) do
+    GenServer.call(server, {:remove_account, id})
+  end
+
+  @impl true
   def accounts(server, role \\ :both) do
     GenServer.call(server, {:get_accounts, role})
   end
@@ -56,6 +62,13 @@ defmodule WatchLater.Storage.AccountsRepository do
   @impl true
   def handle_call({:add_account, account}, _from, %{db: db, accounts: accounts} = state) do
     new_accounts = accounts |> Map.put(account.id, account)
+    :ok = DB.store(db, :accounts, new_accounts)
+    {:reply, :ok, %{state | accounts: new_accounts}}
+  end
+
+  @impl true
+  def handle_call({:remove_account, id}, _from, %{db: db, accounts: accounts} = state) do
+    new_accounts = accounts |> Map.delete(id)
     :ok = DB.store(db, :accounts, new_accounts)
     {:reply, :ok, %{state | accounts: new_accounts}}
   end

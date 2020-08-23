@@ -31,7 +31,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       |> expect(:list_videos, fn @token, "pl1" -> {:ok, videos_ch1} end)
       |> expect(:list_videos, fn @token, "pl2" -> {:ok, videos_ch2} end)
 
-      assert [%Video{id: "v3"}, %Video{id: "v2"}, %Video{id: "v1"}] =
+      assert [%Video{id: "v1"}, %Video{id: "v2"}, %Video{id: "v3"}] =
                NewUploadsFinder.find_new_uploads_for_account(account)
     end
   end

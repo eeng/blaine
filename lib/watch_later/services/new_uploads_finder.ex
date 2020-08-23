@@ -12,7 +12,8 @@ defmodule WatchLater.Services.NewUploadsFinder do
   def find_new_uploads_for_account(%{auth_token: token}, _opts \\ []) do
     with {:ok, subs} <- youtube_api().my_subscriptions(token) do
       subs
-      |> Enum.flat_map(&find_new_uploads_for_channel(token, &1))
+      |> Task.async_stream(&find_new_uploads_for_channel(token, &1))
+      |> Enum.flat_map(fn {:ok, videos} -> videos end)
       |> Enum.sort_by(& &1.published_at, {:desc, DateTime})
     end
   end

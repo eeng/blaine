@@ -1,5 +1,14 @@
+defmodule WatchLater.Google.YouTubeAPI.Behaviour do
+  alias WatchLater.Google.AuthToken
+
+  @callback my_subscriptions(AuthToken.t()) :: {:ok, [map]} | {:error, any}
+  @callback get_uploads_playlist_id(AuthToken.t(), String.t()) ::
+              {:ok, String.t()} | {:error, any}
+  @callback list_videos(AuthToken.t(), String.t()) :: {:ok, String.t()} | {:error, any}
+end
+
 defmodule WatchLater.Google.YouTubeAPI do
-  @behaviour WatchLater.Google.Behaviours.YouTubeAPI
+  @behaviour WatchLater.Google.YouTubeAPI.Behaviour
 
   alias WatchLater.Google.AuthToken
 

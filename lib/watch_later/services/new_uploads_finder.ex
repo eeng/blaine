@@ -1,11 +1,14 @@
 defmodule WatchLater.Services.NewUploadsFinder do
+  @moduledoc """
+  This module is responsible for retrieving the latest uploads through the YouTube API.
+  """
   alias WatchLater.Entities.Video
 
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
   defp youtube_api(), do: Application.get_env(:watch_later, :components)[:google_youtube_api]
 
   def find_new_uploads(opts \\ []) do
-    Keyword.get(opts, :accounts, accounts_manager().accounts(:provider))
+    accounts_manager().accounts(:provider)
     |> Enum.flat_map(&find_new_uploads_for_account(&1, opts))
   end
 

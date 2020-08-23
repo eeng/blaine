@@ -1,5 +1,11 @@
+defmodule WatchLater.Google.PeopleAPI.Behaviour do
+  alias WatchLater.Google.AuthToken
+
+  @callback me(AuthToken.t()) :: {:ok, any} | {:error, any}
+end
+
 defmodule WatchLater.Google.PeopleAPI do
-  @behaviour WatchLater.Google.Behaviours.PeopleAPI
+  @behaviour WatchLater.Google.PeopleAPI.Behaviour
 
   alias WatchLater.Google.AuthToken
 

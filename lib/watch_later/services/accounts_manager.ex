@@ -6,6 +6,13 @@ defmodule WatchLater.Services.AccountsManager.Behaviour do
 end
 
 defmodule WatchLater.Services.AccountsManager do
+  @moduledoc """
+  This module allows adding Google accounts that will be used to retrieve the uploads.
+  It uses the authentication API to exchange the authorization code for a token
+  that is later needed to access the other APIs.
+  In addition, it handles the tokens renewal.
+  """
+
   @behaviour WatchLater.Services.AccountsManager.Behaviour
 
   alias WatchLater.Entities.Account

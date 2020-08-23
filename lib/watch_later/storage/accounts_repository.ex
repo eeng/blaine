@@ -4,6 +4,10 @@ defmodule WatchLater.Storage.AccountsRepository.Behaviour do
 end
 
 defmodule WatchLater.Storage.AccountsRepository do
+  @moduledoc """
+  This GenServer is in charge of storing the Google accounts.
+  """
+
   @behaviour WatchLater.Storage.AccountsRepository.Behaviour
   use GenServer
 

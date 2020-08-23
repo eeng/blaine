@@ -1,5 +1,12 @@
+defmodule WatchLater.Google.AuthAPI.Behaviour do
+  alias WatchLater.Google.AuthToken
+
+  @callback get_token(String.t()) :: {:ok, AuthToken.t()} | {:error, any}
+  @callback renew_token(AuthToken.t()) :: {:ok, AuthToken.t()} | {:error, any} | :still_valid
+end
+
 defmodule WatchLater.Google.AuthAPI do
-  @behaviour WatchLater.Google.Behaviours.AuthAPI
+  @behaviour WatchLater.Google.AuthAPI.Behaviour
 
   alias WatchLater.Google.AuthToken
 

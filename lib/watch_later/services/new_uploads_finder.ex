@@ -2,7 +2,7 @@ defmodule WatchLater.Services.NewUploadsFinder do
   @moduledoc """
   This module is responsible for retrieving the latest uploads through the YouTube API.
   """
-  alias WatchLater.Entities.{Video, Channel}
+  alias WatchLater.Entities.{Video, Channel, Account}
 
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
   defp youtube_api(), do: Application.get_env(:watch_later, :components)[:google_youtube_api]
@@ -12,7 +12,7 @@ defmodule WatchLater.Services.NewUploadsFinder do
     |> Enum.flat_map(&find_new_uploads_for_account(&1, opts))
   end
 
-  def find_new_uploads_for_account(%{auth_token: token}, opts \\ []) do
+  def find_new_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
     with {:ok, subs} <- youtube_api().my_subscriptions(token) do
       subs
       |> Task.async_stream(&find_new_uploads_for_channel(token, &1))
@@ -43,5 +43,17 @@ defmodule WatchLater.Services.NewUploadsFinder do
     |> Enum.filter(fn %{published_at: published_at} ->
       DateTime.compare(published_at, published_after) == :gt
     end)
+  end
+
+  def insert_videos_into_playlist(videos, playlist \\ "WL") do
+    for %Account{auth_token: token} <- accounts_manager().accounts(:watcher) do
+      videos
+      |> Task.async_stream(fn %Video{id: id} ->
+        :ok = youtube_api().insert_video(token, id, playlist)
+      end)
+      |> Stream.run()
+    end
+
+    :ok
   end
 end

@@ -3,7 +3,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
 
   import Mox
   import WatchLater.Factory
-  alias WatchLater.Services.NewUploadsFinder
+  alias WatchLater.Services.{NewUploadsFinder, MockAccountsManager}
   alias WatchLater.Google.MockYouTubeAPI
   alias WatchLater.Entities.{Video, Channel}
 
@@ -45,6 +45,22 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
                NewUploadsFinder.filter_and_sort_videos([v1, v2],
                  published_after: ~U[2020-07-16 00:00:00Z]
                )
+    end
+  end
+
+  describe "insert_videos_into_playlist" do
+    test "should call the API with the watcher account's token" do
+      account = build(:account, auth_token: @token)
+      v1 = build(:video, id: "v1")
+      v2 = build(:video, id: "v2")
+
+      MockAccountsManager |> expect(:accounts, fn :watcher -> [account] end)
+
+      MockYouTubeAPI
+      |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
+      |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
+
+      NewUploadsFinder.insert_videos_into_playlist([v1, v2])
     end
   end
 end

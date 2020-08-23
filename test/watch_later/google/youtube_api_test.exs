@@ -67,6 +67,41 @@ defmodule WatchLater.Google.YouTubeAPITest do
     end
   end
 
+  describe "insert_video" do
+    test "should send the correct request" do
+      response = fixture("youtube/insert_video_ok.json")
+      video_id = "M7FIvfx5J10"
+      playlist_id = "WL"
+      query = [part: "snippet"]
+
+      body = %{
+        snippet: %{
+          playlistId: playlist_id,
+          resourceId: %{kind: "youtube#video", videoId: video_id}
+        }
+      }
+
+      MockHTTP
+      |> expect(:post, fn _, "/playlistItems", body: ^body, query: ^query -> {:ok, response} end)
+
+      assert :ok = YouTubeAPI.insert_video(@token, video_id, playlist_id)
+    end
+
+    test "if the video already exists in the playlist, should not be considered an error" do
+      response = fixture("youtube/insert_video_already_exists.json")
+      MockHTTP |> expect(:post, fn _, "/playlistItems", _ -> {:error, response} end)
+      assert :ok = YouTubeAPI.insert_video(@token, "M7FIvfx5J10", "WL")
+    end
+
+    test "other errors are returned" do
+      response = fixture("youtube/insert_video_unauthorized.json")
+      MockHTTP |> expect(:post, fn _, "/playlistItems", _ -> {:error, response} end)
+
+      assert {:error, %{"error" => %{"code" => 403}}} =
+               YouTubeAPI.insert_video(@token, "M7FIvfx5J10", "WL")
+    end
+  end
+
   def fixture(file) do
     Path.join([__DIR__, "fixtures/", file])
     |> File.read!()

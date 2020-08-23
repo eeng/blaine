@@ -1,0 +1,44 @@
+{
+  "kind": "youtube#playlistItem",
+  "etag": "e1-HTMTrtKAfk6dtcimWHm2cpyg",
+  "id": "V0wwYnlTOTNmSkxaMm5EWm9QcUdheENBLjU2QjQ0RjZEMTA1NTdDQzY=",
+  "snippet": {
+    "publishedAt": "2020-08-23T22:20:10Z",
+    "channelId": "UC0byS93fJLZ2nDZoPqGaxCA",
+    "title": "Volvo Trucks - The Epic Split feat. Van Damme (Live Test)",
+    "description": "Watch Jean-Claude Van Damme carry out his famous split between two reversing trucks. Never done before, JCVD says it's the most epic of splits -- what do you think? Please share & comment! \n\nThis live test was set up to demonstrate the precision and directional stability of Volvo Dynamic Steering -- a world first technology that makes the Volvo FM easier to drive. \n\nFilmed in Spain on a closed-off landing field at sunrise in one take.\n\nDirected by Andreas Nilsson\nSoundtrack by Enya: Only Time\n\nMore about Volvo FM & Volvo Dynamic Steering: \nhttp://www.volvotrucks.com/en-en/trucks/volvo-fm.html\n\nVisit Volvo Trucks website:\nhttps://www.volvotrucks.com\n\nVolvo Trucks on social media:\nhttps://facebook.com/VolvoTrucks\nhttps://youtube.com/VolvoTrucks\nhttps://linkedin.com/company/volvo-trucks\nhttps://instagram.com/volvotrucks\nhttps://twitter.com/volvotrucks",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/M7FIvfx5J10/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/M7FIvfx5J10/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/M7FIvfx5J10/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      },
+      "standard": {
+        "url": "https://i.ytimg.com/vi/M7FIvfx5J10/sddefault.jpg",
+        "width": 640,
+        "height": 480
+      },
+      "maxres": {
+        "url": "https://i.ytimg.com/vi/M7FIvfx5J10/maxresdefault.jpg",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    "channelTitle": "Emma",
+    "playlistId": "WL",
+    "resourceId": {
+      "kind": "youtube#video",
+      "videoId": "M7FIvfx5J10"
+    }
+  }
+}

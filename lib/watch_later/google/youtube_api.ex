@@ -5,6 +5,7 @@ defmodule WatchLater.Google.YouTubeAPI.Behaviour do
   @callback get_uploads_playlist_id(AuthToken.t(), String.t()) ::
               {:ok, String.t()} | {:error, any}
   @callback list_videos(AuthToken.t(), String.t()) :: {:ok, String.t()} | {:error, any}
+  @callback insert_video(AuthToken.t(), String.t(), String.t()) :: :ok | {:error, any}
 end
 
 defmodule WatchLater.Google.YouTubeAPI do
@@ -25,10 +26,10 @@ defmodule WatchLater.Google.YouTubeAPI do
   def my_subscriptions(token) do
     client(token)
     |> http().get("/subscriptions", query: [mine: true, part: "snippet", maxResults: 50])
-    |> extract_subscriptions()
+    |> handle_subscriptions_response()
   end
 
-  defp extract_subscriptions({:ok, %{"items" => items}}) do
+  defp handle_subscriptions_response({:ok, %{"items" => items}}) do
     response =
       for %{"snippet" => %{"title" => title, "resourceId" => %{"channelId" => channelId}}} <-
             items do
@@ -38,7 +39,7 @@ defmodule WatchLater.Google.YouTubeAPI do
     {:ok, response}
   end
 
-  defp extract_subscriptions(response), do: response
+  defp handle_subscriptions_response(response), do: response
 
   @impl true
   def get_uploads_playlist_id(token, channel_id) do
@@ -60,10 +61,10 @@ defmodule WatchLater.Google.YouTubeAPI do
 
     client(token)
     |> http().get("/playlistItems", query: q)
-    |> extract_videos()
+    |> handle_videos_response()
   end
 
-  defp extract_videos({:ok, %{"items" => items}}) do
+  defp handle_videos_response({:ok, %{"items" => items}}) do
     videos =
       for %{
             "contentDetails" => %{"videoId" => id, "videoPublishedAt" => published_at},
@@ -76,5 +77,28 @@ defmodule WatchLater.Google.YouTubeAPI do
     {:ok, videos}
   end
 
-  defp extract_videos(response), do: response
+  defp handle_videos_response(response), do: response
+
+  @impl true
+  def insert_video(token, video_id, playlist_id) do
+    body = %{
+      snippet: %{
+        playlistId: playlist_id,
+        resourceId: %{kind: "youtube#video", videoId: video_id}
+      }
+    }
+
+    client(token)
+    |> http().post("/playlistItems", body: body, query: [part: "snippet"])
+    |> handle_insert_response()
+  end
+
+  defp handle_insert_response({:ok, _}), do: :ok
+
+  defp handle_insert_response({:error, error}) do
+    case error do
+      %{"error" => %{"errors" => [%{"reason" => "videoAlreadyInPlaylist"}]}} -> :ok
+      _ -> {:error, error}
+    end
+  end
 end

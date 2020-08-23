@@ -17,6 +17,6 @@ defmodule WatchLater.Google.AuthToken do
   end
 
   def must_renew?(%AuthToken{expires_at: expires_at}, clock \\ Clock) do
-    clock.current_timestamp() > expires_at - 30
+    clock.current_timestamp() > expires_at - 60
   end
 end

@@ -1,7 +1,16 @@
-defmodule WatchLater.Services.AccountsManager do
+defmodule WatchLater.Services.AccountsManager.Behaviour do
   alias WatchLater.Entities.Account
 
-  @spec add_account(String.t(), Account.role()) :: {:ok, Account.t()} | {:error, any}
+  @callback add_account(String.t(), Account.role()) :: {:ok, Account.t()} | {:error, any}
+  @callback accounts(Account.role() | :both) :: [Account.t()]
+end
+
+defmodule WatchLater.Services.AccountsManager do
+  @behaviour WatchLater.Services.AccountsManager.Behaviour
+
+  alias WatchLater.Entities.Account
+
+  @impl true
   def add_account(code, role) do
     with {:ok, token} <- auth_api().get_token(code),
          {:ok, profile} <- people_api().me(token),
@@ -11,7 +20,7 @@ defmodule WatchLater.Services.AccountsManager do
     end
   end
 
-  @spec accounts(Account.role() | :both) :: [Account.t()]
+  @impl true
   def accounts(role \\ :both) do
     repo().accounts(repo(), role) |> Enum.map(&renew_token_if_necessary/1)
   end

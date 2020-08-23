@@ -4,5 +4,5 @@ defmodule WatchLater.Entities.Account do
   alias __MODULE__
 
   @type role :: :watcher | :provider | :both
-  @type t :: %Account{code: String.t(), role: role}
+  @type t :: %Account{code: String.t(), role: role, id: String.t()}
 end

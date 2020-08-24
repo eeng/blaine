@@ -1,6 +1,6 @@
 defmodule WatchLater.Presentation.CLI do
   alias WatchLater.Google.AuthAPI
-  alias WatchLater.Services.{AccountsManager, NewUploadsFinder}
+  alias WatchLater.Services.{AccountsManager, UploadsScanner}
 
   def add_account(role) do
     # TODO the watcher scopes should not include the force-ssl
@@ -24,7 +24,7 @@ defmodule WatchLater.Presentation.CLI do
   end
 
   def find_uploads_and_add_to_watch_later(opts) do
-    # TODO rename this NewUploadsFinder
-    NewUploadsFinder.find_uploads_and_add_to_watch_later(opts)
+    # TODO rename this UploadsScanner
+    UploadsScanner.find_uploads_and_add_to_watch_later(opts)
   end
 end

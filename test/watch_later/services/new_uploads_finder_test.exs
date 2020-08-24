@@ -1,9 +1,9 @@
-defmodule WatchLater.Services.NewUploadsFinderTest do
+defmodule WatchLater.Services.UploadsScannerTest do
   use ExUnit.Case, async: true
 
   import Mox
   import WatchLater.Factory
-  alias WatchLater.Services.{NewUploadsFinder, MockAccountsManager}
+  alias WatchLater.Services.{UploadsScanner, MockAccountsManager}
   alias WatchLater.Google.MockYouTubeAPI
   alias WatchLater.Entities.{Video, Channel}
 
@@ -32,7 +32,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       |> expect(:list_videos, fn @token, "pl2" -> {:ok, videos_ch2} end)
 
       assert [%Video{id: "v1", channel: %Channel{name: "C1"}}, %Video{id: "v2"}, %Video{id: "v3"}] =
-               NewUploadsFinder.find_uploads_for_account(account)
+               UploadsScanner.find_uploads_for_account(account)
     end
   end
 
@@ -42,7 +42,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       v2 = build(:video, published_at: ~U[2020-07-17 00:00:00Z])
 
       assert [v2] =
-               NewUploadsFinder.filter_and_sort_videos([v1, v2],
+               UploadsScanner.filter_and_sort_videos([v1, v2],
                  published_after: ~U[2020-07-16 00:00:00Z]
                )
     end
@@ -60,7 +60,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
       |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
 
-      {:ok, 2} = NewUploadsFinder.add_videos_to_playlist([v1, v2])
+      {:ok, 2} = UploadsScanner.add_videos_to_playlist([v1, v2])
     end
 
     test "videos already in playlist don't count" do
@@ -72,7 +72,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       MockYouTubeAPI
       |> expect(:insert_video, fn @token, _, _ -> {:error, :already_in_playlist} end)
 
-      {:ok, 0} = NewUploadsFinder.add_videos_to_playlist([v])
+      {:ok, 0} = UploadsScanner.add_videos_to_playlist([v])
     end
   end
 end

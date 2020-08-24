@@ -12,6 +12,7 @@ defmodule WatchLater.Services.UploadsScanner do
 
   Supported options:
     * `:published_after` - Return only videos published after this DateTime.
+    * `:channel_ids` - Search only for videos of these channels.
   """
   def find_uploads(opts) do
     accounts_manager().accounts(:provider)
@@ -21,22 +22,27 @@ defmodule WatchLater.Services.UploadsScanner do
   def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
     with {:ok, subs} <- youtube_api().my_subscriptions(token) do
       subs
+      |> Enum.map(&to_channel/1)
       |> Task.async_stream(&find_uploads_for_channel(token, &1))
       |> Enum.flat_map(fn {:ok, videos} -> videos end)
       |> Video.filter_and_sort(opts)
     end
   end
 
-  def find_uploads_for_channel(token, %{channel_id: channel_id} = sub) do
-    {:ok, playlist_id} = youtube_api().get_uploads_playlist_id(token, channel_id)
-    {:ok, videos} = youtube_api().list_videos(token, playlist_id)
-    videos |> Enum.map(&to_video(&1, sub))
+  defp to_channel(%{channel_id: channel_id, title: channel_name}) do
+    %Channel{id: channel_id, name: channel_name}
   end
 
-  defp to_video(%{video_id: id} = fields, %{title: channel_name, channel_id: channel_id}) do
+  def find_uploads_for_channel(token, %Channel{id: channel_id} = channel) do
+    {:ok, playlist_id} = youtube_api().get_uploads_playlist_id(token, channel_id)
+    {:ok, videos} = youtube_api().list_videos(token, playlist_id)
+    videos |> Enum.map(&to_video(&1, %{channel | playlist_id: playlist_id}))
+  end
+
+  defp to_video(%{video_id: id} = fields, channel) do
     struct(Video, fields)
     |> Map.put(:id, id)
-    |> Map.put(:channel, %Channel{name: channel_name, id: channel_id})
+    |> Map.put(:channel, channel)
   end
 
   def add_videos_to_playlist(videos, playlist \\ "WL") do

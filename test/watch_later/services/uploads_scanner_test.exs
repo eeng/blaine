@@ -12,7 +12,7 @@ defmodule WatchLater.Services.UploadsScannerTest do
   @token build(:auth_token)
 
   describe "find_uploads_for_account" do
-    test "should query the correct YouTube API endpoints" do
+    test "should query the correct YouTube API endpoints and return the found videos" do
       account = build(:account, auth_token: @token)
 
       subscriptions = [%{channel_id: "ch1", title: "C1"}, %{channel_id: "ch2", title: "C2"}]
@@ -31,8 +31,11 @@ defmodule WatchLater.Services.UploadsScannerTest do
       |> expect(:list_videos, fn @token, "pl1" -> {:ok, videos_ch1} end)
       |> expect(:list_videos, fn @token, "pl2" -> {:ok, videos_ch2} end)
 
-      assert [%Video{id: "v1", channel: %Channel{name: "C1"}}, %Video{id: "v2"}, %Video{id: "v3"}] =
-               UploadsScanner.find_uploads_for_account(account)
+      assert [
+               %Video{id: "v1", channel: %Channel{name: "C1", playlist_id: "pl1"}},
+               %Video{id: "v2", channel: %Channel{name: "C1", playlist_id: "pl1"}},
+               %Video{id: "v3", channel: %Channel{name: "C2", playlist_id: "pl2"}}
+             ] = UploadsScanner.find_uploads_for_account(account)
     end
   end
 

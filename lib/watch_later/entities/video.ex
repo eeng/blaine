@@ -12,4 +12,6 @@ defmodule WatchLater.Entities.Video do
       DateTime.compare(published_at, published_after) == :gt
     end)
   end
+
+  defp filter_by(_, videos), do: videos
 end

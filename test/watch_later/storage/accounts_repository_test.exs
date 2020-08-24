@@ -44,7 +44,9 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
       AccountsRepository.add_account(m, a1)
       AccountsRepository.add_account(m, a2)
       AccountsRepository.add_account(m, a3)
-      assert [%{name: "A2"}, %{name: "A3"}] = AccountsRepository.accounts(m, :watcher)
+
+      assert [%{name: "A2"}, %{name: "A3"}] =
+               AccountsRepository.accounts(m, :watcher) |> Enum.sort_by(& &1.name)
     end
   end
 

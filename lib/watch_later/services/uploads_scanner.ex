@@ -20,10 +20,13 @@ defmodule WatchLater.Services.UploadsScanner do
   end
 
   def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
+    max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
+
     with {:ok, subs} <- youtube_api().my_subscriptions(token) do
       subs
       |> Enum.map(&to_channel/1)
-      |> Task.async_stream(&find_uploads_for_channel(token, &1))
+      |> Channel.filter_channels(opts)
+      |> Task.async_stream(&find_uploads_for_channel(token, &1), max_concurrency: max_concurrency)
       |> Enum.flat_map(fn {:ok, videos} -> videos end)
       |> Video.filter_and_sort(opts)
     end
@@ -45,27 +48,33 @@ defmodule WatchLater.Services.UploadsScanner do
     |> Map.put(:channel, channel)
   end
 
-  def add_videos_to_playlist(videos, playlist \\ "WL") do
+  def add_videos_to_playlist(videos, opts \\ []) do
     added_videos =
       accounts_manager().accounts(:watcher)
-      |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, playlist))
+      |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, opts))
       |> Enum.sum()
 
     {:ok, added_videos}
   end
 
-  defp add_videos_to_playlist_of_account(%Account{auth_token: token}, videos, playlist) do
+  defp add_videos_to_playlist_of_account(%Account{auth_token: token}, videos, opts) do
+    playlist = Keyword.get(opts, :playlist, "WL")
+    max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
+
     videos
-    |> Task.async_stream(fn %Video{id: id} ->
-      case youtube_api().insert_video(token, id, playlist) do
-        :ok -> 1
-        _ -> 0
-      end
-    end)
+    |> Task.async_stream(
+      fn %Video{id: id} ->
+        case youtube_api().insert_video(token, id, playlist) do
+          :ok -> 1
+          _ -> 0
+        end
+      end,
+      max_concurrency: max_concurrency
+    )
     |> Enum.into([], fn {:ok, count} -> count end)
   end
 
   def find_uploads_and_add_to_watch_later(opts) do
-    find_uploads(opts) |> add_videos_to_playlist()
+    find_uploads(opts) |> add_videos_to_playlist(opts)
   end
 end

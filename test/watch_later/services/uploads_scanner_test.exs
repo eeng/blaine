@@ -11,10 +11,14 @@ defmodule WatchLater.Services.UploadsScannerTest do
 
   @token build(:auth_token)
 
-  describe "find_uploads_for_account" do
-    test "should query the correct YouTube API endpoints and return the found videos" do
-      account = build(:account, auth_token: @token)
+  setup do
+    %{account: build(:account, auth_token: @token)}
+  end
 
+  describe "find_uploads_for_account" do
+    test "should query the correct YouTube API endpoints and return the found videos", %{
+      account: account
+    } do
       subscriptions = [%{channel_id: "ch1", title: "C1"}, %{channel_id: "ch2", title: "C2"}]
 
       videos_ch1 = [
@@ -31,17 +35,29 @@ defmodule WatchLater.Services.UploadsScannerTest do
       |> expect(:list_videos, fn @token, "pl1" -> {:ok, videos_ch1} end)
       |> expect(:list_videos, fn @token, "pl2" -> {:ok, videos_ch2} end)
 
+      # Added max_concurrency: 1 because Mox doesn't support expecting in any order
+      # (the two :get_uploads_playlist_id could be called in a different order)
       assert [
                %Video{id: "v1", channel: %Channel{name: "C1", playlist_id: "pl1"}},
                %Video{id: "v2", channel: %Channel{name: "C1", playlist_id: "pl1"}},
                %Video{id: "v3", channel: %Channel{name: "C2", playlist_id: "pl2"}}
-             ] = UploadsScanner.find_uploads_for_account(account)
+             ] = UploadsScanner.find_uploads_for_account(account, max_concurrency: 1)
+    end
+
+    test "allows to query only certain channels", %{account: account} do
+      subscriptions = [%{channel_id: "ch1", title: "C1"}, %{channel_id: "ch2", title: "C2"}]
+
+      MockYouTubeAPI
+      |> expect(:my_subscriptions, fn @token -> {:ok, subscriptions} end)
+      |> expect(:get_uploads_playlist_id, fn @token, "ch1" -> {:ok, "pl1"} end)
+      |> expect(:list_videos, fn @token, "pl1" -> {:ok, []} end)
+
+      UploadsScanner.find_uploads_for_account(account, channel_ids: ["ch1"])
     end
   end
 
   describe "add_videos_to_playlist" do
-    test "should call the API with the watcher account's token" do
-      account = build(:account, auth_token: @token)
+    test "should call the API with the watcher account's token", %{account: account} do
       v1 = build(:video, id: "v1")
       v2 = build(:video, id: "v2")
 
@@ -51,11 +67,10 @@ defmodule WatchLater.Services.UploadsScannerTest do
       |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
       |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
 
-      {:ok, 2} = UploadsScanner.add_videos_to_playlist([v1, v2])
+      {:ok, 2} = UploadsScanner.add_videos_to_playlist([v1, v2], max_concurrency: 1)
     end
 
-    test "videos already in playlist don't count" do
-      account = build(:account, auth_token: @token)
+    test "videos already in playlist don't count", %{account: account} do
       v = build(:video)
 
       MockAccountsManager |> expect(:accounts, fn :watcher -> [account] end)

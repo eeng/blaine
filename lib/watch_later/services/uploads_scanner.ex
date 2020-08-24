@@ -7,6 +7,12 @@ defmodule WatchLater.Services.UploadsScanner do
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
   defp youtube_api(), do: Application.get_env(:watch_later, :components)[:google_youtube_api]
 
+  @doc """
+  For all provider accounts, it queries the YouTube API to find the latest uploads.
+
+  Supported options:
+    * `:published_after` - Return only videos published after this DateTime.
+  """
   def find_uploads(opts) do
     accounts_manager().accounts(:provider)
     |> Enum.flat_map(&find_uploads_for_account(&1, opts))
@@ -17,7 +23,7 @@ defmodule WatchLater.Services.UploadsScanner do
       subs
       |> Task.async_stream(&find_uploads_for_channel(token, &1))
       |> Enum.flat_map(fn {:ok, videos} -> videos end)
-      |> filter_and_sort_videos(opts)
+      |> Video.filter_and_sort(opts)
     end
   end
 
@@ -31,18 +37,6 @@ defmodule WatchLater.Services.UploadsScanner do
     struct(Video, fields)
     |> Map.put(:id, id)
     |> Map.put(:channel, %Channel{name: channel_name, id: channel_id})
-  end
-
-  def filter_and_sort_videos(videos, opts) do
-    videos = videos |> Enum.sort_by(& &1.published_at, DateTime)
-    Enum.reduce(opts, videos, &filter_by/2)
-  end
-
-  defp filter_by({:published_after, published_after}, videos) do
-    videos
-    |> Enum.filter(fn %{published_at: published_at} ->
-      DateTime.compare(published_at, published_after) == :gt
-    end)
   end
 
   def add_videos_to_playlist(videos, playlist \\ "WL") do

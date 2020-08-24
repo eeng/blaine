@@ -36,18 +36,6 @@ defmodule WatchLater.Services.UploadsScannerTest do
     end
   end
 
-  describe "filter_and_sort_videos" do
-    test "allows to filter by published_after" do
-      v1 = build(:video, published_at: ~U[2020-07-15 00:00:00Z])
-      v2 = build(:video, published_at: ~U[2020-07-17 00:00:00Z])
-
-      assert [v2] =
-               UploadsScanner.filter_and_sort_videos([v1, v2],
-                 published_after: ~U[2020-07-16 00:00:00Z]
-               )
-    end
-  end
-
   describe "add_videos_to_playlist" do
     test "should call the API with the watcher account's token" do
       account = build(:account, auth_token: @token)

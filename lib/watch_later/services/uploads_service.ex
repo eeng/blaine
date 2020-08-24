@@ -1,4 +1,4 @@
-defmodule WatchLater.Services.UploadsScanner do
+defmodule WatchLater.Services.UploadsService do
   @moduledoc """
   This module is responsible for retrieving the latest uploads through the YouTube API.
   """

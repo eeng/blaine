@@ -1,9 +1,9 @@
-defmodule WatchLater.Services.UploadsScannerTest do
+defmodule WatchLater.Services.UploadsServiceTest do
   use ExUnit.Case, async: true
 
   import Mox
   import WatchLater.Factory
-  alias WatchLater.Services.{UploadsScanner, MockAccountsManager}
+  alias WatchLater.Services.{UploadsService, MockAccountsManager}
   alias WatchLater.Google.MockYouTubeAPI
   alias WatchLater.Entities.{Video, Channel}
 
@@ -41,7 +41,7 @@ defmodule WatchLater.Services.UploadsScannerTest do
                %Video{id: "v1", channel: %Channel{name: "C1", playlist_id: "pl1"}},
                %Video{id: "v2", channel: %Channel{name: "C1", playlist_id: "pl1"}},
                %Video{id: "v3", channel: %Channel{name: "C2", playlist_id: "pl2"}}
-             ] = UploadsScanner.find_uploads_for_account(account, max_concurrency: 1)
+             ] = UploadsService.find_uploads_for_account(account, max_concurrency: 1)
     end
 
     test "allows to query only certain channels", %{account: account} do
@@ -52,7 +52,7 @@ defmodule WatchLater.Services.UploadsScannerTest do
       |> expect(:get_uploads_playlist_id, fn @token, "ch1" -> {:ok, "pl1"} end)
       |> expect(:list_videos, fn @token, "pl1" -> {:ok, []} end)
 
-      UploadsScanner.find_uploads_for_account(account, channel_ids: ["ch1"])
+      UploadsService.find_uploads_for_account(account, channel_ids: ["ch1"])
     end
   end
 
@@ -67,7 +67,7 @@ defmodule WatchLater.Services.UploadsScannerTest do
       |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
       |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
 
-      {:ok, 2} = UploadsScanner.add_videos_to_playlist([v1, v2], max_concurrency: 1)
+      {:ok, 2} = UploadsService.add_videos_to_playlist([v1, v2], max_concurrency: 1)
     end
 
     test "videos already in playlist don't count", %{account: account} do
@@ -78,7 +78,7 @@ defmodule WatchLater.Services.UploadsScannerTest do
       MockYouTubeAPI
       |> expect(:insert_video, fn @token, _, _ -> {:error, :already_in_playlist} end)
 
-      {:ok, 0} = UploadsScanner.add_videos_to_playlist([v])
+      {:ok, 0} = UploadsService.add_videos_to_playlist([v])
     end
   end
 end

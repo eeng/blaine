@@ -1,5 +1,5 @@
 defmodule WatchLater.Presentation.CLI do
-  alias WatchLater.Services.{AccountsManager, UploadsScanner}
+  alias WatchLater.Services.{AccountsManager, UploadsService}
 
   def add_account(role) do
     auth_url = AccountsManager.authorize_url_for(role)
@@ -13,6 +13,6 @@ defmodule WatchLater.Presentation.CLI do
   end
 
   def find_uploads_and_add_to_watch_later(opts) do
-    UploadsScanner.find_uploads_and_add_to_watch_later(opts)
+    UploadsService.find_uploads_and_add_to_watch_later(opts)
   end
 end

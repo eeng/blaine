@@ -38,11 +38,13 @@ defmodule WatchLater.Storage.AccountsRepositoryTest do
 
   describe "accounts" do
     test "allows to filter by role", %{manager: m} do
-      a1 = build(:account, name: "A", role: :provider)
-      a2 = build(:account, name: "B", role: :watcher)
+      a1 = build(:account, name: "A1", role: :provider)
+      a2 = build(:account, name: "A2", role: :watcher)
+      a3 = build(:account, name: "A3", role: :both)
       AccountsRepository.add_account(m, a1)
       AccountsRepository.add_account(m, a2)
-      assert [%{name: "B"}] = AccountsRepository.accounts(m, :watcher)
+      AccountsRepository.add_account(m, a3)
+      assert [%{name: "A2"}, %{name: "A3"}] = AccountsRepository.accounts(m, :watcher)
     end
   end
 

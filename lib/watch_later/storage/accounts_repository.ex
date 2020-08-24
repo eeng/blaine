@@ -80,6 +80,7 @@ defmodule WatchLater.Storage.AccountsRepository do
   end
 
   defp role_matches?(_, :both), do: true
+  defp role_matches?(%Account{role: :both}, _), do: true
   defp role_matches?(%Account{role: role}, role), do: true
   defp role_matches?(_, _), do: false
 end

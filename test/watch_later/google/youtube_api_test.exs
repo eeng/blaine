@@ -87,10 +87,10 @@ defmodule WatchLater.Google.YouTubeAPITest do
       assert :ok = YouTubeAPI.insert_video(@token, video_id, playlist_id)
     end
 
-    test "if the video already exists in the playlist, should not be considered an error" do
+    test "if video already exists in playlist, should return a custom error" do
       response = fixture("youtube/insert_video_already_exists.json")
       MockHTTP |> expect(:post, fn _, "/playlistItems", _ -> {:error, response} end)
-      assert :ok = YouTubeAPI.insert_video(@token, "M7FIvfx5J10", "WL")
+      assert {:error, :already_in_playlist} = YouTubeAPI.insert_video(@token, "M7FIvfx5J10", "WL")
     end
 
     test "other errors are returned" do

@@ -11,7 +11,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
 
   @token build(:auth_token)
 
-  describe "find_new_uploads_for_account" do
+  describe "find_uploads_for_account" do
     test "should query the correct YouTube API endpoints" do
       account = build(:account, auth_token: @token)
 
@@ -32,7 +32,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       |> expect(:list_videos, fn @token, "pl2" -> {:ok, videos_ch2} end)
 
       assert [%Video{id: "v1", channel: %Channel{name: "C1"}}, %Video{id: "v2"}, %Video{id: "v3"}] =
-               NewUploadsFinder.find_new_uploads_for_account(account)
+               NewUploadsFinder.find_uploads_for_account(account)
     end
   end
 
@@ -48,7 +48,7 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
     end
   end
 
-  describe "insert_videos_into_playlist" do
+  describe "add_videos_to_playlist" do
     test "should call the API with the watcher account's token" do
       account = build(:account, auth_token: @token)
       v1 = build(:video, id: "v1")
@@ -60,7 +60,19 @@ defmodule WatchLater.Services.NewUploadsFinderTest do
       |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
       |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
 
-      NewUploadsFinder.insert_videos_into_playlist([v1, v2])
+      {:ok, 2} = NewUploadsFinder.add_videos_to_playlist([v1, v2])
+    end
+
+    test "videos already in playlist don't count" do
+      account = build(:account, auth_token: @token)
+      v = build(:video)
+
+      MockAccountsManager |> expect(:accounts, fn :watcher -> [account] end)
+
+      MockYouTubeAPI
+      |> expect(:insert_video, fn @token, _, _ -> {:error, :already_in_playlist} end)
+
+      {:ok, 0} = NewUploadsFinder.add_videos_to_playlist([v])
     end
   end
 end

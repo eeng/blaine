@@ -97,8 +97,11 @@ defmodule WatchLater.Google.YouTubeAPI do
 
   defp handle_insert_response({:error, error}) do
     case error do
-      %{"error" => %{"errors" => [%{"reason" => "videoAlreadyInPlaylist"}]}} -> :ok
-      _ -> {:error, error}
+      %{"error" => %{"errors" => [%{"reason" => "videoAlreadyInPlaylist"}]}} ->
+        {:error, :already_in_playlist}
+
+      _ ->
+        {:error, error}
     end
   end
 end

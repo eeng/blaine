@@ -7,21 +7,21 @@ defmodule WatchLater.Services.NewUploadsFinder do
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
   defp youtube_api(), do: Application.get_env(:watch_later, :components)[:google_youtube_api]
 
-  def find_new_uploads(opts) do
+  def find_uploads(opts) do
     accounts_manager().accounts(:provider)
-    |> Enum.flat_map(&find_new_uploads_for_account(&1, opts))
+    |> Enum.flat_map(&find_uploads_for_account(&1, opts))
   end
 
-  def find_new_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
+  def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
     with {:ok, subs} <- youtube_api().my_subscriptions(token) do
       subs
-      |> Task.async_stream(&find_new_uploads_for_channel(token, &1))
+      |> Task.async_stream(&find_uploads_for_channel(token, &1))
       |> Enum.flat_map(fn {:ok, videos} -> videos end)
       |> filter_and_sort_videos(opts)
     end
   end
 
-  def find_new_uploads_for_channel(token, %{channel_id: channel_id} = sub) do
+  def find_uploads_for_channel(token, %{channel_id: channel_id} = sub) do
     {:ok, playlist_id} = youtube_api().get_uploads_playlist_id(token, channel_id)
     {:ok, videos} = youtube_api().list_videos(token, playlist_id)
     videos |> Enum.map(&to_video(&1, sub))
@@ -45,15 +45,27 @@ defmodule WatchLater.Services.NewUploadsFinder do
     end)
   end
 
-  def insert_videos_into_playlist(videos, playlist \\ "WL") do
-    for %Account{auth_token: token} <- accounts_manager().accounts(:watcher) do
-      videos
-      |> Task.async_stream(fn %Video{id: id} ->
-        :ok = youtube_api().insert_video(token, id, playlist)
-      end)
-      |> Stream.run()
-    end
+  def add_videos_to_playlist(videos, playlist \\ "WL") do
+    added_videos =
+      accounts_manager().accounts(:watcher)
+      |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, playlist))
+      |> Enum.sum()
 
-    :ok
+    {:ok, added_videos}
+  end
+
+  defp add_videos_to_playlist_of_account(%Account{auth_token: token}, videos, playlist) do
+    videos
+    |> Task.async_stream(fn %Video{id: id} ->
+      case youtube_api().insert_video(token, id, playlist) do
+        :ok -> 1
+        _ -> 0
+      end
+    end)
+    |> Enum.into([], fn {:ok, count} -> count end)
+  end
+
+  def find_uploads_and_add_to_watch_later(opts) do
+    find_uploads(opts) |> add_videos_to_playlist()
   end
 end

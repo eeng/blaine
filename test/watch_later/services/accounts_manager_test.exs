@@ -11,6 +11,32 @@ defmodule WatchLater.Services.AccountsManagerTest do
 
   setup :verify_on_exit!
 
+  describe "authorize_url" do
+    test "for :provider role" do
+      scopes = ~w(
+        https://www.googleapis.com/auth/userinfo.profile
+        https://www.googleapis.com/auth/userinfo.email
+        https://www.googleapis.com/auth/youtube.readonly
+      ) |> Enum.join(" ")
+
+      MockAuthAPI |> expect(:authorize_url, fn scope: ^scopes -> "the url" end)
+      assert "the url" = AccountsManager.authorize_url_for(:provider)
+    end
+
+    test "for :watcher role" do
+      scopes = ~w(
+        https://www.googleapis.com/auth/userinfo.profile
+        https://www.googleapis.com/auth/userinfo.email
+        https://www.googleapis.com/auth/youtube.readonly
+        https://www.googleapis.com/auth/youtube.force-ssl
+      ) |> Enum.join(" ")
+
+      MockAuthAPI |> expect(:authorize_url, 2, fn scope: ^scopes -> "the url" end)
+      assert "the url" = AccountsManager.authorize_url_for(:watcher)
+      assert "the url" = AccountsManager.authorize_url_for(:both)
+    end
+  end
+
   describe "add_account" do
     setup do
       MockAuthAPI |> stub(:get_token, fn _ -> {:ok, :token} end)

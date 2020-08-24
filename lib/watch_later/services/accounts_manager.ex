@@ -1,6 +1,7 @@
 defmodule WatchLater.Services.AccountsManager.Behaviour do
   alias WatchLater.Entities.Account
 
+  @callback authorize_url_for(Account.role()) :: String.t()
   @callback add_account(String.t(), Account.role()) :: {:ok, Account.t()} | {:error, any}
   @callback remove_account(String.t()) :: :ok
   @callback accounts(Account.role() | :both) :: [Account.t()]
@@ -16,7 +17,24 @@ defmodule WatchLater.Services.AccountsManager do
 
   @behaviour WatchLater.Services.AccountsManager.Behaviour
 
+  @provider_scopes ~w(
+    https://www.googleapis.com/auth/userinfo.profile
+    https://www.googleapis.com/auth/userinfo.email
+    https://www.googleapis.com/auth/youtube.readonly
+  )
+  @watcher_scopes @provider_scopes ++ ~w(
+    https://www.googleapis.com/auth/youtube.force-ssl
+  )
+
   alias WatchLater.Entities.Account
+
+  @impl true
+  def authorize_url_for(role) do
+    auth_api().authorize_url(scope: scopes_for(role) |> Enum.join(" "))
+  end
+
+  defp scopes_for(:provider), do: @provider_scopes
+  defp scopes_for(_), do: @watcher_scopes
 
   @impl true
   def add_account(code, role) do

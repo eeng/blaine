@@ -1,6 +1,7 @@
 defmodule WatchLater.Google.AuthAPI.Behaviour do
   alias WatchLater.Google.AuthToken
 
+  @callback authorize_url(list) :: String.t()
   @callback get_token(String.t()) :: {:ok, AuthToken.t()} | {:error, any}
   @callback renew_token(AuthToken.t()) :: {:ok, AuthToken.t()} | {:error, any} | :still_valid
 end
@@ -13,6 +14,7 @@ defmodule WatchLater.Google.AuthAPI do
   defp config(key), do: Application.get_env(:watch_later, __MODULE__)[key]
   defp http(), do: Application.get_env(:watch_later, :components)[:http_client]
 
+  @impl true
   def authorize_url(params) do
     defaults = %{
       client_id: config(:client_id),

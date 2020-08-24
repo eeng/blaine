@@ -2,6 +2,10 @@ Mox.defmock(WatchLater.Services.MockAccountsManager,
   for: WatchLater.Services.AccountsManager.Behaviour
 )
 
+Mox.defmock(WatchLater.Services.MockUploadsService,
+  for: WatchLater.Services.UploadsService.Behaviour
+)
+
 Mox.defmock(WatchLater.Storage.MockAccountsRepository,
   for: WatchLater.Storage.AccountsRepository.Behaviour
 )

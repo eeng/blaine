@@ -7,8 +7,8 @@ defmodule WatchLater.Services.AccountsManagerTest do
   alias WatchLater.Google.{MockAuthAPI, MockPeopleAPI}
   alias WatchLater.Storage.MockAccountsRepository
   import WatchLater.Factory
-  import Mox
 
+  import Mox
   setup :verify_on_exit!
 
   describe "authorize_url" do

@@ -1,7 +1,14 @@
+defmodule WatchLater.Services.UploadsService.Behaviour do
+  @callback find_uploads_and_add_to_watch_later(list) :: {:ok, integer} | {:error, any}
+end
+
 defmodule WatchLater.Services.UploadsService do
   @moduledoc """
   This module is responsible for retrieving the latest uploads through the YouTube API.
   """
+
+  @behaviour WatchLater.Services.UploadsService.Behaviour
+
   alias WatchLater.Entities.{Video, Channel, Account}
 
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
@@ -19,6 +26,8 @@ defmodule WatchLater.Services.UploadsService do
     |> Enum.flat_map(&find_uploads_for_account(&1, opts))
   end
 
+  # TODO if some task were to fail, do the whole process exists? or just continues
+  # anyway? If this happens, we would miss videos.
   def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
     max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
 
@@ -74,6 +83,7 @@ defmodule WatchLater.Services.UploadsService do
     |> Enum.into([], fn {:ok, count} -> count end)
   end
 
+  @impl true
   def find_uploads_and_add_to_watch_later(opts) do
     find_uploads(opts) |> add_videos_to_playlist(opts)
   end

@@ -17,13 +17,9 @@ defmodule WatchLater.Storage.AccountsRepository do
 
   @me __MODULE__
 
-  defmodule State do
-    defstruct [:accounts, :db]
-  end
-
   def start_link(opts) do
     name = Keyword.get(opts, :name, @me)
-    GenServer.start_link(@me, [], name: name)
+    GenServer.start_link(@me, :ok, name: name)
   end
 
   @impl true
@@ -43,40 +39,33 @@ defmodule WatchLater.Storage.AccountsRepository do
 
   @impl true
   def init(_) do
-    {:ok, db} = DB.open()
-
     accounts =
-      case DB.fetch(db, :accounts) do
+      case DB.fetch(:accounts) do
         {:ok, accounts} -> accounts
         _ -> %{}
       end
 
-    {:ok, %State{accounts: accounts, db: db}}
+    {:ok, accounts}
   end
 
   @impl true
-  def terminate(_reason, %{db: db}) do
-    DB.close(db)
-  end
-
-  @impl true
-  def handle_call({:add_account, account}, _from, %{db: db, accounts: accounts} = state) do
+  def handle_call({:add_account, account}, _from, accounts) do
     new_accounts = accounts |> Map.put(account.id, account)
-    :ok = DB.store(db, :accounts, new_accounts)
-    {:reply, :ok, %{state | accounts: new_accounts}}
+    :ok = DB.store(:accounts, new_accounts)
+    {:reply, :ok, new_accounts}
   end
 
   @impl true
-  def handle_call({:remove_account, id}, _from, %{db: db, accounts: accounts} = state) do
+  def handle_call({:remove_account, id}, _from, accounts) do
     new_accounts = accounts |> Map.delete(id)
-    :ok = DB.store(db, :accounts, new_accounts)
-    {:reply, :ok, %{state | accounts: new_accounts}}
+    :ok = DB.store(:accounts, new_accounts)
+    {:reply, :ok, new_accounts}
   end
 
   @impl true
-  def handle_call({:get_accounts, role}, _from, %{accounts: accounts} = state) do
+  def handle_call({:get_accounts, role}, _from, accounts) do
     filtered = accounts |> Map.values() |> Enum.filter(&role_matches?(&1, role))
-    {:reply, filtered, state}
+    {:reply, filtered, accounts}
   end
 
   defp role_matches?(_, :both), do: true

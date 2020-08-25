@@ -23,5 +23,5 @@ erl_crash.dump
 watch_later-*.tar
 
 config/*secrets*
-
+tmp
 *.db

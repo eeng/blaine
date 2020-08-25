@@ -3,6 +3,7 @@ defmodule WatchLater.Application do
 
   def start(_type, _args) do
     children = [
+      WatchLater.Storage.DB,
       WatchLater.Storage.AccountsRepository,
       WatchLater.Jobs.UploadsScanner
     ]

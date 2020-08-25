@@ -23,14 +23,16 @@ defmodule Blaine.Jobs.UploadsScanner do
   end
 
   @impl true
-  def init(state) do
+  def init(%{interval: interval, last_run_at: last_run_at} = state) do
+    Logger.info("Starting UploadScanner with interval: #{interval}, last_run_at: #{last_run_at}")
+
     schedule_work(state)
     {:ok, state}
   end
 
   @impl true
   def handle_info(:work, %State{last_run_at: last_run_at} = state) do
-    Logger.info("Scanning for new uploads published after #{last_run_at} ...")
+    Logger.info("Scanning for new uploads published after #{last_run_at}...")
 
     {:ok, added_count} =
       uploads_service().find_uploads_and_add_to_blaine(published_after: last_run_at)

@@ -16,8 +16,9 @@ defmodule WatchLater.Jobs.UploadsScanner do
 
   def start_link(opts) do
     name = Keyword.get(opts, :name, __MODULE__)
+    interval = config(:interval) * 1000
     last_run_at = opts[:last_run_at] || DB.get(:last_run_at) || DateTime.utc_now()
-    state = %State{interval: config(:interval), last_run_at: last_run_at}
+    state = %State{interval: interval, last_run_at: last_run_at}
     GenServer.start_link(__MODULE__, state, name: name)
   end
 

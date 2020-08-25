@@ -8,6 +8,7 @@ defmodule WatchLater.Jobs.UploadsScanner do
   use GenServer
 
   require Logger
+  alias WatchLater.Storage.DB
 
   defmodule State do
     defstruct [:interval, :last_run_at]
@@ -15,7 +16,7 @@ defmodule WatchLater.Jobs.UploadsScanner do
 
   def start_link(opts) do
     name = Keyword.get(opts, :name, __MODULE__)
-    last_run_at = Keyword.get(opts, :last_run_at, DateTime.utc_now())
+    last_run_at = opts[:last_run_at] || DB.get(:last_run_at) || DateTime.utc_now()
     state = %State{interval: config(:interval), last_run_at: last_run_at}
     GenServer.start_link(__MODULE__, state, name: name)
   end
@@ -35,8 +36,10 @@ defmodule WatchLater.Jobs.UploadsScanner do
 
     Logger.info("Done! Videos added: #{added_count}")
 
+    new_last_run_at = DateTime.utc_now()
+    DB.store(:last_run_at, new_last_run_at)
     schedule_work(state)
-    {:noreply, %{state | last_run_at: DateTime.utc_now()}}
+    {:noreply, %{state | last_run_at: new_last_run_at}}
   end
 
   defp schedule_work(%State{interval: interval}) do

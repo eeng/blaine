@@ -22,6 +22,14 @@ defmodule WatchLater.Storage.DB do
     GenServer.call(@me, {:fetch, key})
   end
 
+  @spec get(atom) :: any
+  def get(key) do
+    case fetch(key) do
+      {:ok, value} -> value
+      _ -> nil
+    end
+  end
+
   @spec destroy() :: :ok | {:error, any}
   def destroy() do
     GenServer.call(@me, :destroy)

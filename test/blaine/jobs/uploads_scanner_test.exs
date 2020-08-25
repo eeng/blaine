@@ -29,7 +29,7 @@ defmodule Blaine.Jobs.UploadsScannerTest do
 
       MockUploadsService
       |> allow(parent, scanner)
-      |> expect(:find_uploads_and_add_to_blaine, fn published_after: ^published_after ->
+      |> expect(:find_uploads_and_add_to_watch_later, fn published_after: ^published_after ->
         {:ok, 0}
       end)
     end

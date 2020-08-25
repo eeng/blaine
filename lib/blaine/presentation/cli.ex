@@ -12,7 +12,7 @@ defmodule Blaine.Presentation.CLI do
     AccountsManager.add_account(code, role)
   end
 
-  def find_uploads_and_add_to_blaine(opts) do
-    UploadsService.find_uploads_and_add_to_blaine(opts)
+  def find_uploads_and_add_to_watch_later(opts) do
+    UploadsService.find_uploads_and_add_to_watch_later(opts)
   end
 end

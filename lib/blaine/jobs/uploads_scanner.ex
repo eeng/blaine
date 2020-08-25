@@ -34,7 +34,7 @@ defmodule Blaine.Jobs.UploadsScanner do
     Logger.info("Scanning for new uploads published after #{last_run_at}...")
 
     {:ok, added_count} =
-      uploads_service().find_uploads_and_add_to_blaine(published_after: last_run_at)
+      uploads_service().find_uploads_and_add_to_watch_later(published_after: last_run_at)
 
     Logger.info("Done! Videos added: #{added_count}")
 

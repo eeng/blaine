@@ -1,5 +1,5 @@
 defmodule Blaine.Services.UploadsService.Behaviour do
-  @callback find_uploads_and_add_to_blaine(list) :: {:ok, integer} | {:error, any}
+  @callback find_uploads_and_add_to_watch_later(list) :: {:ok, integer} | {:error, any}
 end
 
 defmodule Blaine.Services.UploadsService do
@@ -91,7 +91,7 @@ defmodule Blaine.Services.UploadsService do
   end
 
   @impl true
-  def find_uploads_and_add_to_blaine(opts) do
+  def find_uploads_and_add_to_watch_later(opts) do
     find_uploads(opts) |> add_videos_to_playlist(opts)
   end
 end

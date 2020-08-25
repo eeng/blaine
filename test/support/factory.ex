@@ -1,5 +1,5 @@
 defmodule WatchLater.Factory do
-  alias WatchLater.Entities.{Account, Video}
+  alias WatchLater.Entities.{Account, Video, Channel}
   alias WatchLater.Google.AuthToken
 
   def build(:account) do
@@ -7,7 +7,16 @@ defmodule WatchLater.Factory do
   end
 
   def build(:video) do
-    %Video{id: to_string(sequence()), published_at: DateTime.utc_now()}
+    %Video{
+      id: to_string(sequence()),
+      title: "Some funny thing",
+      published_at: DateTime.utc_now(),
+      channel: build(:channel)
+    }
+  end
+
+  def build(:channel) do
+    %Channel{name: "MIT"}
   end
 
   def build(:auth_token) do

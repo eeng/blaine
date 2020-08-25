@@ -9,6 +9,7 @@ defmodule WatchLater.Services.UploadsService do
 
   @behaviour WatchLater.Services.UploadsService.Behaviour
 
+  require Logger
   alias WatchLater.Entities.{Video, Channel, Account}
 
   defp accounts_manager(), do: Application.get_env(:watch_later, :components)[:accounts_manager]
@@ -72,15 +73,21 @@ defmodule WatchLater.Services.UploadsService do
 
     videos
     |> Task.async_stream(
-      fn %Video{id: id} ->
-        case youtube_api().insert_video(token, id, playlist) do
-          :ok -> 1
-          _ -> 0
-        end
-      end,
+      &add_video_to_playlist(&1, playlist, token),
       max_concurrency: max_concurrency
     )
     |> Enum.into([], fn {:ok, added} -> added end)
+  end
+
+  defp add_video_to_playlist(video, playlist, token) do
+    %Video{id: id, title: title, channel: %{name: channel_name}} = video
+
+    Logger.debug("#{channel_name} has uploaded a new video: #{title}")
+
+    case youtube_api().insert_video(token, id, playlist) do
+      :ok -> 1
+      _ -> 0
+    end
   end
 
   @impl true

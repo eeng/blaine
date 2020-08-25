@@ -30,6 +30,7 @@ defmodule Blaine.MixProject do
       {:tesla, "~> 1.3.0"},
       {:jason, "~> 1.2"},
       {:hackney, "~> 1.10"},
+      {:redix, "~> 0.11.2"},
       {:mox, "~> 0.5", only: :test},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
     ]

@@ -79,6 +79,7 @@ defmodule Blaine.Services.UploadsService do
     |> Enum.into([], fn {:ok, added} -> added end)
   end
 
+  # TODO Sometimes YT returns a 500 error when inserting. In that case do we miss the video?
   defp add_video_to_playlist(video, playlist, token) do
     %Video{id: id, title: title, channel: %{name: channel_name}} = video
 

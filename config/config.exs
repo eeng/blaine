@@ -7,7 +7,8 @@ config :blaine, :components,
   google_auth_api: Blaine.Google.AuthAPI,
   google_people_api: Blaine.Google.PeopleAPI,
   google_youtube_api: Blaine.Google.YouTubeAPI,
-  http_client: Blaine.Util.HTTP
+  http_client: Blaine.Util.HTTP,
+  database: Blaine.Storage.Database.Redis
 
 config :blaine, Blaine.Jobs.UploadsScanner, interval: 0
 
@@ -19,5 +20,7 @@ config :logger, :console,
   metadata: [:module]
 
 config :tesla, adapter: Tesla.Adapter.Hackney
+
+config :redix, url: "redis://localhost"
 
 import_config "#{Mix.env()}.exs"

@@ -3,7 +3,8 @@ defmodule Blaine.Application do
 
   def start(_type, _args) do
     children = [
-      Application.get_env(:blaine, :components)[:database],
+      {Redix, {Application.get_env(:redix, :url), [name: :redix]}},
+      Blaine.Storage.Database.ETS,
       Blaine.Storage.AccountsRepository,
       Blaine.Jobs.UploadsScanner
     ]

@@ -8,17 +8,17 @@ defmodule WatchLater.Jobs.UploadsScannerTest do
   setup :verify_on_exit!
 
   describe "periodic execution" do
-    test "calls the service with the last_published_after and then updates it", context do
+    test "calls the service with the last_run_at and then updates it", context do
       t1 = DateTime.utc_now()
-      process_opts = [name: context.test, run_every_ms: 10, last_published_after: t1]
+      process_opts = [name: context.test, interval: 50, last_run_at: t1]
       scanner = start_supervised!({UploadsScanner, process_opts})
 
       wait_until_service_is_called(scanner, t1)
-      %{last_published_after: t2} = :sys.get_state(scanner)
+      %{last_run_at: t2} = :sys.get_state(scanner)
       assert :gt = DateTime.compare(t2, t1)
 
       wait_until_service_is_called(scanner, t2)
-      %{last_published_after: t3} = :sys.get_state(scanner)
+      %{last_run_at: t3} = :sys.get_state(scanner)
       assert :gt = DateTime.compare(t3, t2)
     end
 

@@ -11,7 +11,7 @@ config :watch_later, :components,
 
 config :watch_later, WatchLater.Storage.DB, dets_table: :watch_later
 
-config :watch_later, WatchLater.Jobs.UploadsScanner, run_every_ms: 0
+config :watch_later, WatchLater.Jobs.UploadsScanner, interval: 0
 
 config :logger,
   backends: [:console]

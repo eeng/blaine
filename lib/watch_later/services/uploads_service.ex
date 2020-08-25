@@ -82,7 +82,7 @@ defmodule WatchLater.Services.UploadsService do
   defp add_video_to_playlist(video, playlist, token) do
     %Video{id: id, title: title, channel: %{name: channel_name}} = video
 
-    Logger.debug("#{channel_name} has uploaded a new video: #{title}")
+    Logger.info("#{channel_name} has uploaded a new video: #{title}")
 
     case youtube_api().insert_video(token, id, playlist) do
       :ok -> 1

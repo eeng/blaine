@@ -22,7 +22,7 @@ defmodule Blaine.Storage.AccountsRepositoryTest do
     test "should persist the account", %{manager: m} do
       a = build(:account, id: "787", name: "X")
       :ok = AccountsRepository.add_account(m, a)
-      assert {:ok, %{"787" => a}} = DB.fetch(:accounts)
+      assert {:ok, %{"787" => a}} = db().fetch(:accounts)
     end
 
     test "should override the account if already exists by id", %{manager: m} do
@@ -50,7 +50,7 @@ defmodule Blaine.Storage.AccountsRepositoryTest do
   describe "init" do
     test "should restore the persisted accounts", %{process_name: process_name} do
       a = build(:account, id: "121")
-      DB.store(:accounts, %{"121" => a})
+      db().store(:accounts, %{"121" => a})
       pid = stop_process_and_get_new_pid(process_name)
       assert [a] = AccountsRepository.accounts(pid)
     end

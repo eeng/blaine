@@ -8,7 +8,6 @@ defmodule Blaine.Jobs.UploadsScanner do
   use GenServer
 
   require Logger
-  alias Blaine.Storage.DB
 
   defmodule State do
     defstruct [:interval, :last_run_at]
@@ -17,7 +16,7 @@ defmodule Blaine.Jobs.UploadsScanner do
   def start_link(opts) do
     name = Keyword.get(opts, :name, __MODULE__)
     interval = config(:interval) * 1000
-    last_run_at = opts[:last_run_at] || DB.get(:last_run_at) || DateTime.utc_now()
+    last_run_at = opts[:last_run_at] || db().get(:last_run_at) || DateTime.utc_now()
     state = %State{interval: interval, last_run_at: last_run_at}
     GenServer.start_link(__MODULE__, state, name: name)
   end
@@ -40,7 +39,7 @@ defmodule Blaine.Jobs.UploadsScanner do
     Logger.info("Done! Videos added: #{added_count}")
 
     new_last_run_at = DateTime.utc_now()
-    DB.store(:last_run_at, new_last_run_at)
+    db().store(:last_run_at, new_last_run_at)
     schedule_work(state)
     {:noreply, %{state | last_run_at: new_last_run_at}}
   end
@@ -50,6 +49,7 @@ defmodule Blaine.Jobs.UploadsScanner do
   end
 
   defp uploads_service(), do: Application.get_env(:blaine, :components)[:uploads_service]
+  defp db(), do: Application.get_env(:blaine, :components)[:database]
 
   defp config(key), do: Application.get_env(:blaine, __MODULE__)[key]
 end

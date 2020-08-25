@@ -13,7 +13,6 @@ defmodule Blaine.Storage.AccountsRepository do
   use GenServer
 
   alias Blaine.Entities.Account
-  alias Blaine.Storage.DB
 
   @me __MODULE__
 
@@ -40,7 +39,7 @@ defmodule Blaine.Storage.AccountsRepository do
   @impl true
   def init(_) do
     accounts =
-      case DB.fetch(:accounts) do
+      case db().fetch(:accounts) do
         {:ok, accounts} -> accounts
         _ -> %{}
       end
@@ -51,14 +50,14 @@ defmodule Blaine.Storage.AccountsRepository do
   @impl true
   def handle_call({:add_account, account}, _from, accounts) do
     new_accounts = accounts |> Map.put(account.id, account)
-    :ok = DB.store(:accounts, new_accounts)
+    :ok = db().store(:accounts, new_accounts)
     {:reply, :ok, new_accounts}
   end
 
   @impl true
   def handle_call({:remove_account, id}, _from, accounts) do
     new_accounts = accounts |> Map.delete(id)
-    :ok = DB.store(:accounts, new_accounts)
+    :ok = db().store(:accounts, new_accounts)
     {:reply, :ok, new_accounts}
   end
 
@@ -72,4 +71,6 @@ defmodule Blaine.Storage.AccountsRepository do
   defp role_matches?(%Account{role: :both}, _), do: true
   defp role_matches?(%Account{role: role}, role), do: true
   defp role_matches?(_, _), do: false
+
+  defp db(), do: Application.get_env(:blaine, :components)[:database]
 end

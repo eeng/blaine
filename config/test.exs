@@ -9,6 +9,6 @@ config :blaine, :components,
   google_youtube_api: Blaine.Google.MockYouTubeAPI,
   http_client: Blaine.Util.MockHTTP
 
-config :blaine, Blaine.Storage.DB, dets_table: :blaine_test
+config :blaine, Blaine.Storage.Database.DETS, dets_table: :blaine_test
 
 config :logger, level: :error

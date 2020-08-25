@@ -1,8 +1,9 @@
-defmodule Blaine.Storage.DB do
+defmodule Blaine.Storage.Database.DETS do
   @moduledoc """
   This GenServer handles the system persistance in a DETS table.
   """
   use GenServer
+  use Blaine.Storage.Database
 
   @me __MODULE__
 
@@ -12,25 +13,17 @@ defmodule Blaine.Storage.DB do
     GenServer.start_link(@me, :ok, name: @me)
   end
 
-  @spec store(atom, any) :: :ok | {:error, any}
+  @impl true
   def store(key, value) do
     GenServer.call(@me, {:store, key, value})
   end
 
-  @spec fetch(atom) :: {:ok, any} | {:error, any}
+  @impl true
   def fetch(key) do
     GenServer.call(@me, {:fetch, key})
   end
 
-  @spec get(atom) :: any
-  def get(key) do
-    case fetch(key) do
-      {:ok, value} -> value
-      _ -> nil
-    end
-  end
-
-  @spec destroy() :: :ok | {:error, any}
+  @impl true
   def destroy() do
     GenServer.call(@me, :destroy)
   end

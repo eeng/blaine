@@ -20,8 +20,9 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-watch_later-*.tar
+blaine-*.tar
 
+.elixir_ls
 config/*secrets*
 tmp
 *.db

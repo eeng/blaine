@@ -1,2 +1,2 @@
-alias WatchLater.{Services, Google, Util, Storage, Entities, Jobs}
-alias WatchLater.Presentation.CLI
+alias Blaine.{Services, Google, Util, Storage, Entities, Jobs}
+alias Blaine.Presentation.CLI

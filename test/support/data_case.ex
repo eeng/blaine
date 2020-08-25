@@ -1,4 +1,4 @@
-defmodule WatchLater.DataCase do
+defmodule Blaine.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the DB.
@@ -8,7 +8,7 @@ defmodule WatchLater.DataCase do
 
   using do
     quote do
-      alias WatchLater.Storage.DB
+      alias Blaine.Storage.DB
 
       setup do
         on_exit(fn -> DB.destroy() end)

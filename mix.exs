@@ -1,9 +1,9 @@
-defmodule WatchLater.MixProject do
+defmodule Blaine.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :watch_later,
+      app: :blaine,
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
@@ -16,7 +16,7 @@ defmodule WatchLater.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {WatchLater.Application, []}
+      mod: {Blaine.Application, []}
     ]
   end
 

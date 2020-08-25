@@ -1,17 +1,17 @@
 import Config
 
-config :watch_later, :components,
-  accounts_manager: WatchLater.Services.AccountsManager,
-  uploads_service: WatchLater.Services.UploadsService,
-  accounts_repo: WatchLater.Storage.AccountsRepository,
-  google_auth_api: WatchLater.Google.AuthAPI,
-  google_people_api: WatchLater.Google.PeopleAPI,
-  google_youtube_api: WatchLater.Google.YouTubeAPI,
-  http_client: WatchLater.Util.HTTP
+config :blaine, :components,
+  accounts_manager: Blaine.Services.AccountsManager,
+  uploads_service: Blaine.Services.UploadsService,
+  accounts_repo: Blaine.Storage.AccountsRepository,
+  google_auth_api: Blaine.Google.AuthAPI,
+  google_people_api: Blaine.Google.PeopleAPI,
+  google_youtube_api: Blaine.Google.YouTubeAPI,
+  http_client: Blaine.Util.HTTP
 
-config :watch_later, WatchLater.Storage.DB, dets_table: :watch_later
+config :blaine, Blaine.Storage.DB, dets_table: :blaine
 
-config :watch_later, WatchLater.Jobs.UploadsScanner, interval: 0
+config :blaine, Blaine.Jobs.UploadsScanner, interval: 0
 
 config :logger,
   backends: [:console]

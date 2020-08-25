@@ -1,18 +1,18 @@
-Mox.defmock(WatchLater.Services.MockAccountsManager,
-  for: WatchLater.Services.AccountsManager.Behaviour
+Mox.defmock(Blaine.Services.MockAccountsManager,
+  for: Blaine.Services.AccountsManager.Behaviour
 )
 
-Mox.defmock(WatchLater.Services.MockUploadsService,
-  for: WatchLater.Services.UploadsService.Behaviour
+Mox.defmock(Blaine.Services.MockUploadsService,
+  for: Blaine.Services.UploadsService.Behaviour
 )
 
-Mox.defmock(WatchLater.Storage.MockAccountsRepository,
-  for: WatchLater.Storage.AccountsRepository.Behaviour
+Mox.defmock(Blaine.Storage.MockAccountsRepository,
+  for: Blaine.Storage.AccountsRepository.Behaviour
 )
 
-Mox.defmock(WatchLater.Google.MockAuthAPI, for: WatchLater.Google.AuthAPI.Behaviour)
-Mox.defmock(WatchLater.Google.MockPeopleAPI, for: WatchLater.Google.PeopleAPI.Behaviour)
-Mox.defmock(WatchLater.Google.MockYouTubeAPI, for: WatchLater.Google.YouTubeAPI.Behaviour)
+Mox.defmock(Blaine.Google.MockAuthAPI, for: Blaine.Google.AuthAPI.Behaviour)
+Mox.defmock(Blaine.Google.MockPeopleAPI, for: Blaine.Google.PeopleAPI.Behaviour)
+Mox.defmock(Blaine.Google.MockYouTubeAPI, for: Blaine.Google.YouTubeAPI.Behaviour)
 
-Mox.defmock(WatchLater.Util.MockHTTP, for: WatchLater.Util.HTTP.Behaviour)
-Mox.defmock(WatchLater.MockClock, for: WatchLater.Util.Clock.Behaviour)
+Mox.defmock(Blaine.Util.MockHTTP, for: Blaine.Util.HTTP.Behaviour)
+Mox.defmock(Blaine.MockClock, for: Blaine.Util.Clock.Behaviour)

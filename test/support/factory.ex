@@ -1,6 +1,6 @@
-defmodule WatchLater.Factory do
-  alias WatchLater.Entities.{Account, Video, Channel}
-  alias WatchLater.Google.AuthToken
+defmodule Blaine.Factory do
+  alias Blaine.Entities.{Account, Video, Channel}
+  alias Blaine.Google.AuthToken
 
   def build(:account) do
     %Account{id: to_string(sequence()), role: :both}

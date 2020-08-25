@@ -10,7 +10,7 @@ defmodule WatchLater.Jobs.UploadsScannerTest do
   describe "periodic execution" do
     test "calls the service with the last_published_after and then updates it", context do
       t1 = DateTime.utc_now()
-      process_opts = [name: context.test, run_every: 10, last_published_after: t1]
+      process_opts = [name: context.test, run_every_ms: 10, last_published_after: t1]
       scanner = start_supervised!({UploadsScanner, process_opts})
 
       wait_until_service_is_called(scanner, t1)

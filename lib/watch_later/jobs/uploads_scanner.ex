@@ -10,14 +10,14 @@ defmodule WatchLater.Jobs.UploadsScanner do
   require Logger
 
   defmodule State do
-    defstruct [:run_every, :last_published_after]
+    defstruct [:run_every_ms, :last_published_after]
   end
 
   def start_link(opts) do
     name = Keyword.get(opts, :name, __MODULE__)
-    run_every = Keyword.get(opts, :run_every, 60 * 60 * 1000)
+    run_every_ms = Keyword.get(opts, :run_every_ms, config(:run_every_ms))
     last_published_after = Keyword.get(opts, :last_published_after, DateTime.utc_now())
-    state = %State{run_every: run_every, last_published_after: last_published_after}
+    state = %State{run_every_ms: run_every_ms, last_published_after: last_published_after}
     GenServer.start_link(__MODULE__, state, name: name)
   end
 
@@ -40,9 +40,11 @@ defmodule WatchLater.Jobs.UploadsScanner do
     {:noreply, %{state | last_published_after: DateTime.utc_now()}}
   end
 
-  defp schedule_work(%State{run_every: run_every}) do
-    Process.send_after(self(), :work, run_every)
+  defp schedule_work(%State{run_every_ms: run_every_ms}) do
+    if run_every_ms > 0, do: Process.send_after(self(), :work, run_every_ms)
   end
 
   defp uploads_service(), do: Application.get_env(:watch_later, :components)[:uploads_service]
+
+  defp config(key), do: Application.get_env(:watch_later, __MODULE__)[key]
 end

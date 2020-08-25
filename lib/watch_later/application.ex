@@ -3,7 +3,8 @@ defmodule WatchLater.Application do
 
   def start(_type, _args) do
     children = [
-      WatchLater.Storage.AccountsRepository
+      WatchLater.Storage.AccountsRepository,
+      WatchLater.Jobs.UploadsScanner
     ]
 
     opts = [strategy: :one_for_one, name: WatchLater.Supervisor]

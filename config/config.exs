@@ -11,6 +11,13 @@ config :watch_later, :components,
 
 config :watch_later, WatchLater.Storage.DB, dets_table: :watch_later
 
+config :logger,
+  backends: [:console]
+
+config :logger, :console,
+  format: "$time $metadata[$level] $levelpad$message\n",
+  metadata: [:module]
+
 config :tesla, adapter: Tesla.Adapter.Hackney
 
 import_config "#{Mix.env()}.exs"

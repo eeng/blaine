@@ -7,6 +7,8 @@ defmodule WatchLater.Jobs.UploadsScanner do
 
   use GenServer
 
+  require Logger
+
   defmodule State do
     defstruct [:run_every, :last_published_after]
   end
@@ -27,8 +29,12 @@ defmodule WatchLater.Jobs.UploadsScanner do
 
   @impl true
   def handle_info(:work, %State{last_published_after: last_published_after} = state) do
-    {:ok, _} =
+    Logger.info("Scanning for new uploads published after #{last_published_after} ...")
+
+    {:ok, added_count} =
       uploads_service().find_uploads_and_add_to_watch_later(published_after: last_published_after)
+
+    Logger.info("Done! Videos added: #{added_count}")
 
     schedule_work(state)
     {:noreply, %{state | last_published_after: DateTime.utc_now()}}

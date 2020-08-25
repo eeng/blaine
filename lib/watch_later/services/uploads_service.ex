@@ -80,7 +80,7 @@ defmodule WatchLater.Services.UploadsService do
       end,
       max_concurrency: max_concurrency
     )
-    |> Enum.into([], fn {:ok, count} -> count end)
+    |> Enum.into([], fn {:ok, added} -> added end)
   end
 
   @impl true

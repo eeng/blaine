@@ -10,3 +10,5 @@ config :watch_later, :components,
   http_client: WatchLater.Util.MockHTTP
 
 config :watch_later, WatchLater.Storage.DB, dets_table: :watch_later_test
+
+config :logger, level: :error

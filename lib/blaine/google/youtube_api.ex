@@ -31,9 +31,9 @@ defmodule Blaine.Google.YouTubeAPI do
 
   defp handle_subscriptions_response({:ok, %{"items" => items}}) do
     response =
-      for %{"snippet" => %{"title" => title, "resourceId" => %{"channelId" => channelId}}} <-
+      for %{"snippet" => %{"title" => title, "resourceId" => %{"channelId" => channel_id}}} <-
             items do
-        %{title: title, channel_id: channelId}
+        %{title: title, channel_id: channel_id}
       end
 
     {:ok, response}

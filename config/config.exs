@@ -7,10 +7,7 @@ config :blaine, :components,
   google_auth_api: Blaine.Google.AuthAPI,
   google_people_api: Blaine.Google.PeopleAPI,
   google_youtube_api: Blaine.Google.YouTubeAPI,
-  http_client: Blaine.Util.HTTP,
-  database: Blaine.Storage.Database.DETS
-
-config :blaine, Blaine.Storage.Database.DETS, dets_table: :blaine
+  http_client: Blaine.Util.HTTP
 
 config :blaine, Blaine.Jobs.UploadsScanner, interval: 0
 

@@ -3,7 +3,7 @@ defmodule Blaine.Application do
 
   def start(_type, _args) do
     children = [
-      Blaine.Storage.Database.DETS,
+      Application.get_env(:blaine, :components)[:database],
       Blaine.Storage.AccountsRepository,
       Blaine.Jobs.UploadsScanner
     ]

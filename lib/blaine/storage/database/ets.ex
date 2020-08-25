@@ -1,6 +1,6 @@
-defmodule Blaine.Storage.Database.DETS do
+defmodule Blaine.Storage.Database.ETS do
   @moduledoc """
-  This GenServer handles the system persistance in a DETS table.
+  This GenServer handles the system persistance in a ETS table. Mainly for test usage.
   """
   use GenServer
   use Blaine.Storage.Database
@@ -22,26 +22,26 @@ defmodule Blaine.Storage.Database.DETS do
     GenServer.call(@me, {:fetch, key})
   end
 
-  @impl true
-  def init(table) do
-    :dets.open_file(table, [{:file, db_file(table)}])
+  def destroy() do
+    GenServer.call(@me, :destroy)
   end
 
   @impl true
-  def terminate(_reason, db) do
-    :dets.close(db)
+  def init(table) do
+    db = :ets.new(table, [:set, :protected])
+    {:ok, db}
   end
 
   @impl true
   def handle_call({:store, key, value}, _from, db) do
-    :ok = :dets.insert(db, {key, value})
+    :ets.insert(db, {key, value})
     {:reply, :ok, db}
   end
 
   @impl true
   def handle_call({:fetch, key}, _from, db) do
     reply =
-      case :dets.lookup(db, key) do
+      case :ets.lookup(db, key) do
         [{^key, value}] -> {:ok, value}
         _ -> {:error, :not_found}
       end
@@ -49,7 +49,9 @@ defmodule Blaine.Storage.Database.DETS do
     {:reply, reply, db}
   end
 
-  defp db_file(db) do
-    "#{db}.db" |> String.to_charlist()
+  @impl true
+  def handle_call(:destroy, _from, db) do
+    :ets.delete_all_objects(db)
+    {:reply, :ok, db}
   end
 end

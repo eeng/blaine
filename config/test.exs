@@ -7,8 +7,9 @@ config :blaine, :components,
   google_auth_api: Blaine.Google.MockAuthAPI,
   google_people_api: Blaine.Google.MockPeopleAPI,
   google_youtube_api: Blaine.Google.MockYouTubeAPI,
-  http_client: Blaine.Util.MockHTTP
+  http_client: Blaine.Util.MockHTTP,
+  database: Blaine.Storage.Database.ETS
 
-config :blaine, Blaine.Storage.Database.DETS, dets_table: :blaine_test
+config :blaine, Blaine.Storage.Database.ETS, table: :blaine_test
 
 config :logger, level: :error

@@ -1,6 +1,11 @@
 import Config
 
-config :blaine, :supervise, [{Blaine.Jobs.UploadsScanner, interval: 0}]
+config :blaine, :components, repository: Persistence.Repository.Dets
+
+config :blaine, :supervise, [
+  Persistence.Repository.Dets,
+  {Blaine.Jobs.UploadsScanner, interval: 0}
+]
 
 config :blaine, Blaine.Storage.Database.DETS, table: :blaine
 

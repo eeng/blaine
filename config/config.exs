@@ -7,8 +7,7 @@ config :blaine, :components,
   google_auth_api: Blaine.Google.AuthAPI,
   google_people_api: Blaine.Google.PeopleAPI,
   google_youtube_api: Blaine.Google.YouTubeAPI,
-  http_client: Blaine.Util.HTTP,
-  database: Blaine.Storage.Database.Redis
+  http_client: Blaine.Util.HTTP
 
 config :logger,
   backends: [:console]

@@ -5,6 +5,7 @@ defmodule Blaine.Storage.AccountsRepositoryTest do
   alias Blaine.Storage.AccountsRepository
 
   setup context do
+    # TODO rename processs_name and maybe use __MODULE__?
     process_name = context.test
     manager = start_supervised!({AccountsRepository, name: process_name})
     %{manager: manager, process_name: context.test}

@@ -1,3 +1,4 @@
+# TODO move to test/support and rename and maybe use agent?
 defmodule Blaine.Storage.Database.ETS do
   @moduledoc """
   This GenServer handles the system persistance in a ETS table. Mainly for test usage.
@@ -22,6 +23,7 @@ defmodule Blaine.Storage.Database.ETS do
     GenServer.call(@me, {:fetch, key})
   end
 
+  # TODO rename to purge
   def destroy() do
     GenServer.call(@me, :destroy)
   end

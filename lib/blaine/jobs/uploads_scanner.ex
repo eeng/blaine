@@ -25,6 +25,7 @@ defmodule Blaine.Jobs.UploadsScanner do
   def init(%{interval: interval, last_run_at: last_run_at} = state) do
     Logger.info("Starting UploadScanner with interval: #{interval}, last_run_at: #{last_run_at}")
 
+    # TODO try :timer.send_interval(1000, :tick)
     schedule_work(state)
     {:ok, state}
   end

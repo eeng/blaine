@@ -1,4 +1,5 @@
 defmodule Blaine.Storage.Database.DETS do
+  # TODO see here how to differentiate the @impl https://github.com/quantum-elixir/quantum-storage-persistent-ets/blob/master/lib/quantum_storage_ets.ex
   @moduledoc """
   This GenServer handles the system persistance in a DETS table.
   """

@@ -29,8 +29,7 @@ defmodule Blaine.Jobs.UploadsScanner do
 
     Logger.info("Starting UploadScanner with interval: #{interval}, last_run_at: #{last_run_at}")
 
-    # TODO try :timer.send_interval(1000, :tick)
-    schedule_work(state)
+    if interval > 0, do: :timer.send_interval(interval, :work)
     {:ok, state}
   end
 
@@ -46,11 +45,6 @@ defmodule Blaine.Jobs.UploadsScanner do
     new_last_run_at = DateTime.utc_now()
     @repository.save_last_run_at(new_last_run_at)
 
-    schedule_work(state)
     {:noreply, %{state | last_run_at: new_last_run_at}}
-  end
-
-  defp schedule_work(%State{interval: interval}) do
-    if interval > 0, do: Process.send_after(self(), :work, interval)
   end
 end

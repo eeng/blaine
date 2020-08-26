@@ -67,7 +67,7 @@ defmodule Blaine.Services.UploadsServiceTest do
       |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
       |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
 
-      {:ok, 2} = UploadsService.add_videos_to_playlist([v1, v2], max_concurrency: 1)
+      {:ok, 2} = UploadsService.add_videos_to_playlist([v1, v2])
     end
 
     test "videos already in playlist don't count", %{account: account} do

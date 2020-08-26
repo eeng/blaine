@@ -69,14 +69,7 @@ defmodule Blaine.Services.UploadsService do
 
   defp add_videos_to_playlist_of_account(%Account{auth_token: token}, videos, opts) do
     playlist = Keyword.get(opts, :playlist, "WL")
-    max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
-
-    videos
-    |> Task.async_stream(
-      &add_video_to_playlist(&1, playlist, token),
-      max_concurrency: max_concurrency
-    )
-    |> Enum.into([], fn {:ok, added} -> added end)
+    videos |> Enum.map(&add_video_to_playlist(&1, playlist, token))
   end
 
   # TODO Sometimes YT returns a 500 error when inserting. In that case do we miss the video?

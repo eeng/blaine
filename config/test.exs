@@ -12,6 +12,8 @@ config :blaine, :components,
   database: Blaine.Storage.Database.ETS,
   repository: Blaine.FakeRepository
 
+config :blaine, :supervise, [Blaine.Storage.Database.ETS]
+
 # TODO vuela
 config :blaine, Blaine.Storage.Database.ETS, table: :blaine_test
 

@@ -10,8 +10,6 @@ config :blaine, :components,
   http_client: Blaine.Util.HTTP,
   database: Blaine.Storage.Database.Redis
 
-config :blaine, Blaine.Jobs.UploadsScanner, interval: 0
-
 config :logger,
   backends: [:console]
 
@@ -20,7 +18,5 @@ config :logger, :console,
   metadata: [:module]
 
 config :tesla, adapter: Tesla.Adapter.Hackney
-
-config :redix, url: "redis://localhost"
 
 import_config "#{Mix.env()}.exs"

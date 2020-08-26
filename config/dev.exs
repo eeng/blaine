@@ -1,6 +1,6 @@
 import Config
 
-# config :blaine, :components, database: Blaine.Storage.Database.DETS
+config :blaine, :supervise, [{Blaine.Jobs.UploadsScanner, interval: 0}]
 
 config :blaine, Blaine.Storage.Database.DETS, table: :blaine
 

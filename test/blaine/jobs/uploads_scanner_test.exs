@@ -9,11 +9,7 @@ defmodule Blaine.Jobs.UploadsScannerTest do
     test "calls the service with the last_run_at and then updates it" do
       t1 = DateTime.utc_now()
       FakeRepository.save_last_run_at(t1)
-
-      scanner =
-        start_supervised!(
-          {UploadsScanner, repository: FakeRepository, service: MockUploadsService}
-        )
+      scanner = start_supervised!(UploadsScanner)
 
       expect_service_called(scanner, t1)
       send(scanner, :work)

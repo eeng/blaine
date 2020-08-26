@@ -8,8 +8,11 @@ config :blaine, :components,
   google_people_api: Blaine.Google.MockPeopleAPI,
   google_youtube_api: Blaine.Google.MockYouTubeAPI,
   http_client: Blaine.Util.MockHTTP,
-  database: Blaine.Storage.Database.ETS
+  # TODO vuela
+  database: Blaine.Storage.Database.ETS,
+  repository: Blaine.FakeRepository
 
+# TODO vuela
 config :blaine, Blaine.Storage.Database.ETS, table: :blaine_test
 
 config :logger, level: :error

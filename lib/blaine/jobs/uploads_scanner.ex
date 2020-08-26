@@ -9,8 +9,11 @@ defmodule Blaine.Jobs.UploadsScanner do
 
   require Logger
 
+  @uploads_service Application.get_env(:blaine, :components)[:uploads_service]
+  @repository Application.get_env(:blaine, :components)[:repository]
+
   defmodule State do
-    defstruct [:interval, :last_run_at, :repository, :service]
+    defstruct [:interval, :last_run_at]
   end
 
   def start_link(opts) do
@@ -20,15 +23,9 @@ defmodule Blaine.Jobs.UploadsScanner do
   @impl true
   def init(opts) do
     interval = Keyword.get(opts, :interval, 0) * 1000
-    repository = Keyword.fetch!(opts, :repository)
-    last_run_at = repository.last_run_at() || DateTime.utc_now()
+    last_run_at = @repository.last_run_at() || DateTime.utc_now()
 
-    state = %State{
-      interval: interval,
-      last_run_at: last_run_at,
-      repository: repository,
-      service: Keyword.fetch!(opts, :service)
-    }
+    state = %State{interval: interval, last_run_at: last_run_at}
 
     Logger.info("Starting UploadScanner with interval: #{interval}, last_run_at: #{last_run_at}")
 
@@ -38,16 +35,16 @@ defmodule Blaine.Jobs.UploadsScanner do
   end
 
   @impl true
-  def handle_info(:work, state) do
-    %State{last_run_at: last_run_at, repository: repository, service: service} = state
+  def handle_info(:work, %State{last_run_at: last_run_at} = state) do
     Logger.info("Scanning for new uploads published after #{last_run_at}...")
 
-    {:ok, added_count} = service.find_uploads_and_add_to_watch_later(published_after: last_run_at)
+    {:ok, added_count} =
+      @uploads_service.find_uploads_and_add_to_watch_later(published_after: last_run_at)
 
     Logger.info("Done! Videos added: #{added_count}")
 
     new_last_run_at = DateTime.utc_now()
-    repository.save_last_run_at(new_last_run_at)
+    @repository.save_last_run_at(new_last_run_at)
 
     schedule_work(state)
     {:noreply, %{state | last_run_at: new_last_run_at}}

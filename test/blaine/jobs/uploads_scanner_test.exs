@@ -1,17 +1,19 @@
 defmodule Blaine.Jobs.UploadsScannerTest do
   use ExUnit.Case, async: true
 
+  use Blaine.FakeRepository
+  use Blaine.Mocks
   alias Blaine.Jobs.UploadsScanner
-  alias Blaine.Services.MockUploadsService
-
-  import Mox
-  setup :verify_on_exit!
 
   describe "checkpoint execution" do
-    test "calls the service with the last_run_at and then updates it", context do
+    test "calls the service with the last_run_at and then updates it" do
       t1 = DateTime.utc_now()
-      process_opts = [name: context.test, last_run_at: t1]
-      scanner = start_supervised!({UploadsScanner, process_opts})
+      FakeRepository.save_last_run_at(t1)
+
+      scanner =
+        start_supervised!(
+          {UploadsScanner, repository: FakeRepository, service: MockUploadsService}
+        )
 
       expect_service_called(scanner, t1)
       send(scanner, :work)
@@ -22,6 +24,8 @@ defmodule Blaine.Jobs.UploadsScannerTest do
       send(scanner, :work)
       %{last_run_at: t3} = :sys.get_state(scanner)
       assert :gt = DateTime.compare(t3, t2)
+
+      assert t3 == FakeRepository.last_run_at()
     end
 
     defp expect_service_called(scanner, published_after) do

@@ -1,13 +1,12 @@
 defmodule Blaine.Services.UploadsServiceTest do
   use ExUnit.Case, async: true
+  use Blaine.Mocks
 
-  import Mox
   import Blaine.Factory
+
   alias Blaine.Services.{UploadsService, MockAccountsManager}
   alias Blaine.Google.MockYouTubeAPI
   alias Blaine.Entities.{Video, Channel}
-
-  setup :verify_on_exit!
 
   @token build(:auth_token)
 

@@ -9,11 +9,11 @@ defmodule Blaine.Services.UploadsService do
 
   @behaviour Blaine.Services.UploadsService.Behaviour
 
+  @accounts_manager Application.get_env(:blaine, :components)[:accounts_manager]
+  @youtube_api Application.get_env(:blaine, :components)[:google_youtube_api]
+
   require Logger
   alias Blaine.Entities.{Video, Channel, Account}
-
-  defp accounts_manager(), do: Application.get_env(:blaine, :components)[:accounts_manager]
-  defp youtube_api(), do: Application.get_env(:blaine, :components)[:google_youtube_api]
 
   @doc """
   For all provider accounts, it queries the YouTube API to find the latest uploads.
@@ -23,7 +23,7 @@ defmodule Blaine.Services.UploadsService do
     * `:channel_ids` - Search only for videos of these channels.
   """
   def find_uploads(opts) do
-    accounts_manager().accounts(:provider)
+    @accounts_manager.accounts(:provider)
     |> Enum.flat_map(&find_uploads_for_account(&1, opts))
   end
 
@@ -32,7 +32,7 @@ defmodule Blaine.Services.UploadsService do
   def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
     max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
 
-    with {:ok, subs} <- youtube_api().my_subscriptions(token) do
+    with {:ok, subs} <- @youtube_api.my_subscriptions(token) do
       subs
       |> Enum.map(&to_channel/1)
       |> Channel.filter_channels(opts)
@@ -47,8 +47,8 @@ defmodule Blaine.Services.UploadsService do
   end
 
   def find_uploads_for_channel(token, %Channel{id: channel_id} = channel) do
-    {:ok, playlist_id} = youtube_api().get_uploads_playlist_id(token, channel_id)
-    {:ok, videos} = youtube_api().list_videos(token, playlist_id)
+    {:ok, playlist_id} = @youtube_api.get_uploads_playlist_id(token, channel_id)
+    {:ok, videos} = @youtube_api.list_videos(token, playlist_id)
     videos |> Enum.map(&to_video(&1, %{channel | playlist_id: playlist_id}))
   end
 
@@ -60,7 +60,7 @@ defmodule Blaine.Services.UploadsService do
 
   def add_videos_to_playlist(videos, opts \\ []) do
     added_videos =
-      accounts_manager().accounts(:watcher)
+      @accounts_manager.accounts(:watcher)
       |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, opts))
       |> Enum.sum()
 
@@ -78,7 +78,7 @@ defmodule Blaine.Services.UploadsService do
 
     Logger.info("#{channel_name} has uploaded a new video: #{title}")
 
-    case youtube_api().insert_video(token, id, playlist) do
+    case @youtube_api.insert_video(token, id, playlist) do
       :ok -> 1
       _ -> 0
     end

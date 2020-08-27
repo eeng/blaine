@@ -16,8 +16,6 @@ Mox.defmock(Blaine.MockClock, for: Blaine.Util.Clock.Behaviour)
 defmodule Blaine.Mocks do
   defmacro __using__(_opts) do
     quote do
-      alias Blaine.Services.MockUploadsService
-
       import Mox
       setup :verify_on_exit!
     end

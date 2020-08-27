@@ -4,6 +4,7 @@ defmodule Blaine.Jobs.UploadsScannerTest do
   use Blaine.Mocks
 
   alias Blaine.Jobs.UploadsScanner
+  alias Blaine.Services.MockUploadsService
 
   describe "checkpoint execution" do
     test "calls the service with the last_run_at and then updates it" do

@@ -1,12 +1,10 @@
 defmodule Blaine.Google.PeopleAPITest do
   use ExUnit.Case, async: true
+  use Blaine.Mocks
 
   alias Blaine.Util.MockHTTP
   alias Blaine.Google.PeopleAPI
   alias Blaine.Google.AuthToken
-
-  import Mox
-  setup :verify_on_exit!
 
   @token %AuthToken{}
 

@@ -1,11 +1,9 @@
 defmodule Blaine.Google.AuthTokenTest do
   use ExUnit.Case, async: true
+  use Blaine.Mocks
 
   alias Blaine.MockClock
   alias Blaine.Google.AuthToken
-
-  import Mox
-  setup :verify_on_exit!
 
   describe "from_json" do
     test "calculates the correct expires_at based on expires_in" do

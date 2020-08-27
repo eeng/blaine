@@ -7,6 +7,6 @@ config :blaine, :components,
   google_people_api: Blaine.Google.MockPeopleAPI,
   google_youtube_api: Blaine.Google.MockYouTubeAPI,
   http_client: Blaine.Util.MockHTTP,
-  repository: Blaine.FakeRepository
+  repository: Blaine.Persistance.MockRepository
 
 config :logger, level: :error

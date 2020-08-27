@@ -6,6 +6,8 @@ Mox.defmock(Blaine.Services.MockUploadsService,
   for: Blaine.Services.UploadsService.Behaviour
 )
 
+Mox.defmock(Blaine.Persistance.MockRepository, for: Blaine.Persistance.Repository)
+
 Mox.defmock(Blaine.Google.MockAuthAPI, for: Blaine.Google.AuthAPI.Behaviour)
 Mox.defmock(Blaine.Google.MockPeopleAPI, for: Blaine.Google.PeopleAPI.Behaviour)
 Mox.defmock(Blaine.Google.MockYouTubeAPI, for: Blaine.Google.YouTubeAPI.Behaviour)
@@ -18,6 +20,7 @@ defmodule Blaine.Mocks do
     quote do
       import Mox
       setup :verify_on_exit!
+      setup :set_mox_from_context
     end
   end
 end

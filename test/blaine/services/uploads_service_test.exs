@@ -66,7 +66,7 @@ defmodule Blaine.Services.UploadsServiceTest do
       |> expect(:insert_video, fn @token, "v1", "WL" -> :ok end)
       |> expect(:insert_video, fn @token, "v2", "WL" -> :ok end)
 
-      {:ok, 2} = UploadsService.add_videos_to_playlist([v1, v2])
+      assert {:ok, 2} = UploadsService.add_videos_to_playlist([v1, v2])
     end
 
     test "videos already in playlist don't count", %{account: account} do
@@ -77,7 +77,18 @@ defmodule Blaine.Services.UploadsServiceTest do
       MockYouTubeAPI
       |> expect(:insert_video, fn @token, _, _ -> {:error, :already_in_playlist} end)
 
-      {:ok, 0} = UploadsService.add_videos_to_playlist([v])
+      assert {:ok, 0} = UploadsService.add_videos_to_playlist([v])
+    end
+
+    test "if there is another error, should just crash", %{account: account} do
+      MockAccountsManager |> expect(:accounts, fn :watcher -> [account] end)
+
+      MockYouTubeAPI
+      |> expect(:insert_video, fn @token, _, _ -> {:error, "oops"} end)
+
+      assert_raise CaseClauseError, fn ->
+        UploadsService.add_videos_to_playlist([build(:video)])
+      end
     end
   end
 end

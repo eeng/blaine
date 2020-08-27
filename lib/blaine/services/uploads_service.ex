@@ -27,19 +27,17 @@ defmodule Blaine.Services.UploadsService do
     |> Enum.flat_map(&find_uploads_for_account(&1, opts))
   end
 
-  # TODO if some task were to fail, do the whole process exists? or just continues
-  # anyway? If this happens, we would miss videos.
   def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
     max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
 
-    with {:ok, subs} <- @youtube_api.my_subscriptions(token) do
-      subs
-      |> Enum.map(&to_channel/1)
-      |> Channel.filter_channels(opts)
-      |> Task.async_stream(&find_uploads_for_channel(token, &1), max_concurrency: max_concurrency)
-      |> Enum.flat_map(fn {:ok, videos} -> videos end)
-      |> Video.filter_and_sort(opts)
-    end
+    {:ok, subs} = @youtube_api.my_subscriptions(token)
+
+    subs
+    |> Enum.map(&to_channel/1)
+    |> Channel.filter_channels(opts)
+    |> Task.async_stream(&find_uploads_for_channel(token, &1), max_concurrency: max_concurrency)
+    |> Enum.flat_map(fn {:ok, videos} -> videos end)
+    |> Video.filter_and_sort(opts)
   end
 
   defp to_channel(%{channel_id: channel_id, title: channel_name}) do
@@ -72,7 +70,6 @@ defmodule Blaine.Services.UploadsService do
     videos |> Enum.map(&add_video_to_playlist(&1, playlist, token))
   end
 
-  # TODO Sometimes YT returns a 500 error when inserting. In that case do we miss the video?
   defp add_video_to_playlist(video, playlist, token) do
     %Video{id: id, title: title, channel: %{name: channel_name}} = video
 
@@ -80,7 +77,7 @@ defmodule Blaine.Services.UploadsService do
 
     case @youtube_api.insert_video(token, id, playlist) do
       :ok -> 1
-      _ -> 0
+      {:error, :already_in_playlist} -> 0
     end
   end
 

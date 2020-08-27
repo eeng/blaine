@@ -24,12 +24,13 @@ defmodule Blaine.Jobs.UploadsScanner do
   def init(opts) do
     interval = Keyword.get(opts, :interval, 0) * 1000
     last_run_at = @repository.last_run_at() || DateTime.utc_now()
-
     state = %State{interval: interval, last_run_at: last_run_at}
 
-    Logger.info("Starting UploadScanner with interval: #{interval}, last_run_at: #{last_run_at}")
+    if interval > 0 do
+      Logger.info("Starting with interval: #{interval}, last_run_at: #{last_run_at}")
+      :timer.send_interval(interval, :work)
+    end
 
-    if interval > 0, do: :timer.send_interval(interval, :work)
     {:ok, state}
   end
 

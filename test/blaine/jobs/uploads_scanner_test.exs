@@ -1,8 +1,8 @@
 defmodule Blaine.Jobs.UploadsScannerTest do
   use ExUnit.Case, async: true
-
   use Blaine.FakeRepository
   use Blaine.Mocks
+
   alias Blaine.Jobs.UploadsScanner
 
   describe "checkpoint execution" do

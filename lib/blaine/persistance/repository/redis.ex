@@ -3,8 +3,16 @@ defmodule Persistence.Repository.Redis do
   This GenServer handles the system persistance in a Redis database.
   """
 
-  @behaviour Blaine.Persistance.Repository
+  use Blaine.Persistance.Repository
+
   @ns :blaine
+
+  @impl true
+  def accounts(role) do
+    get(:accounts, %{})
+    |> Map.values()
+    |> Enum.filter(&role_matches?(&1, role))
+  end
 
   @impl true
   def save_last_run_at(last_run_at) do
@@ -22,11 +30,11 @@ defmodule Persistence.Repository.Redis do
     :ok
   end
 
-  defp get(key) do
+  defp get(key, default \\ nil) do
     with {:ok, value} when not is_nil(value) <- Redix.command(:redix, ["GET", ns_key(key)]) do
       :erlang.binary_to_term(value)
     else
-      _ -> nil
+      _ -> default
     end
   end
 

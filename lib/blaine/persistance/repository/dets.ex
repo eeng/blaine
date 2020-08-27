@@ -3,15 +3,20 @@ defmodule Persistence.Repository.Dets do
   This GenServer handles the system persistance in a DETS table.
   """
 
-  @behaviour Blaine.Persistance.Repository
-  @me __MODULE__
-
+  use Blaine.Persistance.Repository
   use GenServer
 
-  alias Blaine.Persistance.Repository
+  @me __MODULE__
 
   def start_link(_) do
     GenServer.start_link(@me, :blaine, name: @me)
+  end
+
+  @impl Repository
+  def accounts(role) do
+    GenServer.call(@me, {:get, :accounts, %{}})
+    |> Map.values()
+    |> Enum.filter(&role_matches?(&1, role))
   end
 
   @impl Repository
@@ -21,7 +26,7 @@ defmodule Persistence.Repository.Dets do
 
   @impl Repository
   def last_run_at() do
-    GenServer.call(@me, {:get, :last_run_at})
+    GenServer.call(@me, {:get, :last_run_at, nil})
   end
 
   @impl GenServer
@@ -43,11 +48,11 @@ defmodule Persistence.Repository.Dets do
   end
 
   @impl GenServer
-  def handle_call({:get, key}, _from, db) do
+  def handle_call({:get, key, default}, _from, db) do
     reply =
       case :dets.lookup(db, key) do
         [{^key, value}] -> value
-        _ -> nil
+        _ -> default
       end
 
     {:reply, reply, db}

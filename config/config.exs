@@ -3,7 +3,6 @@ import Config
 config :blaine, :components,
   accounts_manager: Blaine.Services.AccountsManager,
   uploads_service: Blaine.Services.UploadsService,
-  accounts_repo: Blaine.Storage.AccountsRepository,
   google_auth_api: Blaine.Google.AuthAPI,
   google_people_api: Blaine.Google.PeopleAPI,
   google_youtube_api: Blaine.Google.YouTubeAPI,

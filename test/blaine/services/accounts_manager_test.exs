@@ -1,15 +1,14 @@
 defmodule Blaine.Services.AccountsManagerTest do
   use ExUnit.Case, async: true
+  use Blaine.FakeRepository
+  use Blaine.Mocks
+
+  import Blaine.Factory
 
   alias Blaine.Services.AccountsManager
   alias Blaine.Entities.Account
   alias Blaine.Google.AuthToken
   alias Blaine.Google.{MockAuthAPI, MockPeopleAPI}
-  alias Blaine.Storage.MockAccountsRepository
-  import Blaine.Factory
-
-  import Mox
-  setup :verify_on_exit!
 
   describe "authorize_url" do
     test "for :provider role" do
@@ -41,7 +40,6 @@ defmodule Blaine.Services.AccountsManagerTest do
     setup do
       MockAuthAPI |> stub(:get_token, fn _ -> {:ok, :token} end)
       MockPeopleAPI |> stub(:me, fn _ -> profile_response(1, "x") end)
-      MockAccountsRepository |> stub(:add_account, fn _, _ -> :ok end)
       :ok
     end
 
@@ -63,8 +61,8 @@ defmodule Blaine.Services.AccountsManagerTest do
     end
 
     test "should add the account to the repo" do
-      MockAccountsRepository |> expect(:add_account, fn _, %{code: "A"} -> :ok end)
       AccountsManager.add_account("A", :provider)
+      assert [%{code: "A"}] = FakeRepository.accounts(:provider)
     end
   end
 
@@ -73,7 +71,7 @@ defmodule Blaine.Services.AccountsManagerTest do
       MockAuthAPI |> stub(:renew_token, fn _ -> :still_valid end)
 
       a = build(:account, id: "121", role: :watcher)
-      MockAccountsRepository |> expect(:accounts, fn _, :watcher -> [a] end)
+      FakeRepository.add_account(a)
       assert [a] = AccountsManager.accounts(:watcher)
     end
   end

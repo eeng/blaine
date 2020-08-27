@@ -1,15 +1,14 @@
 import Config
 
-config :blaine, :components, repository: Persistence.Repository.Dets
-# config :blaine, :components, repository: Persistence.Repository.Redis
+config :blaine, :components, repository: Blaine.Persistence.Repository.Dets
+# config :blaine, :components, repository: Blaine.Persistence.Repository.Redis
 
 config :blaine, :supervise, [
-  Persistence.Repository.Dets,
+  Blaine.Persistence.Repository.Dets,
   # {Redix, name: :redix},
+  # Blaine.Persistence.Repository.Redis,
   {Blaine.Jobs.UploadsScanner, interval: 0}
 ]
-
-config :blaine, Blaine.Storage.Database.DETS, table: :blaine
 
 config :logger, level: :debug
 

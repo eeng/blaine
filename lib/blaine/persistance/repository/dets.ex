@@ -1,4 +1,4 @@
-defmodule Persistence.Repository.Dets do
+defmodule Blaine.Persistence.Repository.Dets do
   @moduledoc """
   This GenServer handles the system persistance in a DETS table.
   """

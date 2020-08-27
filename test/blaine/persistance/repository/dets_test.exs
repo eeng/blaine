@@ -3,7 +3,7 @@ defmodule Persistence.Repository.DetsTest do
 
   import Blaine.Factory
 
-  alias Persistence.Repository.Dets, as: DetsRepository
+  alias Blaine.Persistence.Repository.Dets, as: DetsRepository
 
   setup context do
     table = context.test

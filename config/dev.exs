@@ -1,9 +1,11 @@
 import Config
 
 config :blaine, :components, repository: Persistence.Repository.Dets
+# config :blaine, :components, repository: Persistence.Repository.Redis
 
 config :blaine, :supervise, [
   Persistence.Repository.Dets,
+  # {Redix, name: :redix},
   {Blaine.Jobs.UploadsScanner, interval: 0}
 ]
 

@@ -15,18 +15,20 @@ defmodule Persistence.Repository.Dets do
   end
 
   @impl Repository
-  def last_run_at() do
-    GenServer.call(@me, :last_run_at)
+  def save_last_run_at(last_run_at) do
+    GenServer.call(@me, {:store, :last_run_at, last_run_at})
   end
 
   @impl Repository
-  def save_last_run_at(last_run_at) do
-    GenServer.call(@me, {:save_last_run_at, last_run_at})
+  def last_run_at() do
+    GenServer.call(@me, {:get, :last_run_at})
   end
 
   @impl GenServer
   def init(table) do
-    :dets.open_file(table, [{:file, db_file(table)}])
+    File.mkdir("priv")
+    path = "priv/#{table}.db" |> String.to_charlist()
+    :dets.open_file(table, [{:file, path}])
   end
 
   @impl GenServer
@@ -35,23 +37,19 @@ defmodule Persistence.Repository.Dets do
   end
 
   @impl GenServer
-  def handle_call({:save_last_run_at, last_run_at}, _from, table) do
-    :ok = :dets.insert(table, {:last_run_at, last_run_at})
-    {:reply, :ok, table}
+  def handle_call({:store, key, value}, _from, db) do
+    :ok = :dets.insert(db, {key, value})
+    {:reply, :ok, db}
   end
 
   @impl GenServer
-  def handle_call(:last_run_at, _from, table) do
+  def handle_call({:get, key}, _from, db) do
     reply =
-      case :dets.lookup(table, :last_run_at) do
-        [{:last_run_at, value}] -> value
+      case :dets.lookup(db, key) do
+        [{^key, value}] -> value
         _ -> nil
       end
 
-    {:reply, reply, table}
-  end
-
-  defp db_file(table) do
-    "#{table}.db" |> String.to_charlist()
+    {:reply, reply, db}
   end
 end

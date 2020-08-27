@@ -25,4 +25,4 @@ blaine-*.tar
 .elixir_ls
 config/*secrets*
 tmp
-*.db
+priv/*.db

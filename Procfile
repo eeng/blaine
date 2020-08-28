@@ -1,1 +1,1 @@
-worker: mix run --no-halt
+worker: elixir --sname server -S mix run --no-halt

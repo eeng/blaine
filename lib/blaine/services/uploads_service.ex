@@ -27,10 +27,14 @@ defmodule Blaine.Services.UploadsService do
     |> Enum.flat_map(&find_uploads_for_account(&1, opts))
   end
 
-  def find_uploads_for_account(%Account{auth_token: token}, opts \\ []) do
+  def find_uploads_for_account(%Account{auth_token: token, name: account_name}, opts \\ []) do
     max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
 
     {:ok, subs} = @youtube_api.my_subscriptions(token)
+
+    Logger.info(
+      "Finding latest uploads for account #{account_name} (#{Enum.count(subs)} channels)..."
+    )
 
     subs
     |> Enum.map(&to_channel/1)

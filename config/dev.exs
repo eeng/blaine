@@ -7,7 +7,7 @@ config :blaine, :supervise, [
   Blaine.Persistence.Repository.Dets,
   # {Redix, name: :redix},
   # Blaine.Persistence.Repository.Redis,
-  {Blaine.Jobs.UploadsScanner, interval: 0}
+  {Blaine.Jobs.ChannelsMonitor, interval: 0}
 ]
 
 config :logger, level: :debug

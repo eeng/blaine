@@ -1,8 +1,8 @@
-defmodule Blaine.Jobs.UploadsScannerTest do
+defmodule Blaine.Jobs.ChannelsMonitorTest do
   use ExUnit.Case
   use Blaine.Mocks
 
-  alias Blaine.Jobs.UploadsScanner
+  alias Blaine.Jobs.ChannelsMonitor
   alias Blaine.Services.MockUploadsService
   alias Blaine.Persistance.MockRepository
 
@@ -14,16 +14,16 @@ defmodule Blaine.Jobs.UploadsScannerTest do
       |> expect(:last_run_at, fn -> t1 end)
       |> expect(:save_last_run_at, 2, fn _ -> :ok end)
 
-      scanner = start_supervised!(UploadsScanner)
+      monitor = start_supervised!(ChannelsMonitor)
 
       expect_service_called_with(t1)
-      send(scanner, :work)
-      %{last_run_at: t2} = :sys.get_state(scanner)
+      send(monitor, :work)
+      %{last_run_at: t2} = :sys.get_state(monitor)
       assert :gt = DateTime.compare(t2, t1)
 
       expect_service_called_with(t2)
-      send(scanner, :work)
-      %{last_run_at: t3} = :sys.get_state(scanner)
+      send(monitor, :work)
+      %{last_run_at: t3} = :sys.get_state(monitor)
       assert :gt = DateTime.compare(t3, t2)
     end
 
@@ -43,11 +43,11 @@ defmodule Blaine.Jobs.UploadsScannerTest do
       MockUploadsService
       |> expect(:find_uploads_and_add_to_watch_later, fn _ -> {:error, "oops"} end)
 
-      scanner = start_supervised!(UploadsScanner)
+      monitor = start_supervised!(ChannelsMonitor)
 
-      ref = Process.monitor(scanner)
-      send(scanner, :work)
-      assert_receive {:DOWN, ^ref, _, ^scanner, _}
+      ref = Process.monitor(monitor)
+      send(monitor, :work)
+      assert_receive {:DOWN, ^ref, _, ^monitor, _}
     end
   end
 end

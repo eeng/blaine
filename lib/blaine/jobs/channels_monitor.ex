@@ -1,4 +1,4 @@
-defmodule Blaine.Jobs.UploadsScanner do
+defmodule Blaine.Jobs.ChannelsMonitor do
   @moduledoc """
   This process runs periodically to discover new uploads and add them to the WL playlist.
   It keeps the `last_run_at` as a checkpoint, to continue from that point forward
@@ -36,7 +36,7 @@ defmodule Blaine.Jobs.UploadsScanner do
 
   @impl true
   def handle_info(:work, %State{last_run_at: last_run_at} = state) do
-    Logger.info("Scanning for new uploads published after #{last_run_at}...")
+    Logger.info("Looking for uploads published after #{last_run_at}...")
 
     {:ok, added_count} =
       @uploads_service.find_uploads_and_add_to_watch_later(published_after: last_run_at)

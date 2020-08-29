@@ -5,8 +5,8 @@ config :blaine, :components, repository: Blaine.Persistence.Repository.Redis
 config :blaine, :supervise, [
   {Redix, {System.get_env("REDIS_URL", "redis://localhost"), [name: :redix]}},
   Blaine.Persistence.Repository.Redis,
-  {Blaine.Jobs.UploadsScanner,
-   interval: String.to_integer(System.get_env("SCANNER_INTERVAL", "0"))}
+  {Blaine.Jobs.ChannelsMonitor,
+   interval: String.to_integer(System.get_env("MONITOR_INTERVAL", "0"))}
 ]
 
 config :blaine, Blaine.Google.AuthAPI,

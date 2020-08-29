@@ -27,7 +27,7 @@ defmodule Blaine.Jobs.UploadsScanner do
     state = %State{interval: interval, last_run_at: last_run_at}
 
     if interval > 0 do
-      Logger.info("Starting with interval: #{interval}, last_run_at: #{last_run_at}")
+      Logger.info("Monitoring with interval: #{interval}, last_run_at: #{last_run_at}")
       :timer.send_interval(interval, :work)
     end
 

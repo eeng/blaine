@@ -38,7 +38,8 @@ defmodule Blaine.Services.AccountsManager do
   end
 
   defp scopes_for(:provider), do: @provider_scopes
-  defp scopes_for(_), do: @watcher_scopes
+  defp scopes_for(:watcher), do: @watcher_scopes
+  defp scopes_for(:both), do: @watcher_scopes
 
   @impl true
   def add_account(code, role) do

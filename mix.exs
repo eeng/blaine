@@ -9,7 +9,8 @@ defmodule Blaine.MixProject do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -33,6 +34,12 @@ defmodule Blaine.MixProject do
       {:redix, "~> 0.11.2"},
       {:mox, "~> 0.5", only: :test},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
+    ]
+  end
+
+  def aliases do
+    [
+      "blaine.start": "run --no-halt"
     ]
   end
 end

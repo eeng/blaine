@@ -26,15 +26,15 @@ defmodule Persistence.Repository.DetsTest do
 
   describe "accounts" do
     test "should allow to get accounts of a certain role" do
-      a1 = build(:account, role: :provider)
-      a2 = build(:account, role: :watcher)
-      a3 = build(:account, role: :both)
+      a1 = build(:account, role: :provider, name: "a1")
+      a2 = build(:account, role: :watcher, name: "a1")
+      a3 = build(:account, role: :both, name: "a1")
 
       [a1, a2, a3] |> Enum.each(&DetsRepository.add_account/1)
 
-      assert [^a1, ^a2, ^a3] = DetsRepository.accounts(:both)
-      assert [^a1, ^a3] = DetsRepository.accounts(:provider)
-      assert [^a2, ^a3] = DetsRepository.accounts(:watcher)
+      assert [^a1, ^a2, ^a3] = DetsRepository.accounts(:both) |> Enum.sort_by(& &1.name)
+      assert [^a1, ^a3] = DetsRepository.accounts(:provider) |> Enum.sort_by(& &1.name)
+      assert [^a2, ^a3] = DetsRepository.accounts(:watcher) |> Enum.sort_by(& &1.name)
     end
   end
 

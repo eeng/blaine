@@ -1,0 +1,63 @@
+{
+  "kind": "youtube#SubscriptionListResponse",
+  "etag": "TycI-NFtXDdZlNPsl2zekrJlH44",
+  "nextPageToken": "CAIQAA",
+  "pageInfo": {
+    "totalResults": 55,
+    "resultsPerPage": 2
+  },
+  "items": [
+    {
+      "kind": "youtube#subscription",
+      "etag": "WOONUo9j-I__Vga63g1yD2l4G38",
+      "id": "b8kci53LCXYbk6Qe1yUDEnRjhyCNOVX90VnYDMaSoeM",
+      "snippet": {
+        "publishedAt": "2017-12-02T18:20:45Z",
+        "title": "Wyckoff Trading Method",
+        "description": "Wyckoff Associates is dedicated to educating investors about Richard D. Wyckoff’s timeless market analysis and trading principles, and providing modern tools to implement them.\n\nFor information about Wyckoff Associates' Wyckoff Trading Method Educational Courses, Indicators, and Research please visit our website www.WyckoffAnalytics.com.\n\nSubscribe to the Wyckoff Method channel to be notified immediately when future videos are posted!",
+        "resourceId": {
+          "kind": "youtube#channel",
+          "channelId": "UCzdnvMNNeBSRRh1KWuJ_BUQ"
+        },
+        "channelId": "UC0byS93fJLZ2nDZoPqGaxCA",
+        "thumbnails": {
+          "default": {
+            "url": "https://yt3.ggpht.com/-lcNyHQ5fy9c/AAAAAAAAAAI/AAAAAAAAAAA/Tjw7It5vVRM/s88-c-k-no-mo-rj-c0xffffff/photo.jpg"
+          },
+          "medium": {
+            "url": "https://yt3.ggpht.com/-lcNyHQ5fy9c/AAAAAAAAAAI/AAAAAAAAAAA/Tjw7It5vVRM/s240-c-k-no-mo-rj-c0xffffff/photo.jpg"
+          },
+          "high": {
+            "url": "https://yt3.ggpht.com/-lcNyHQ5fy9c/AAAAAAAAAAI/AAAAAAAAAAA/Tjw7It5vVRM/s800-c-k-no-mo-rj-c0xffffff/photo.jpg"
+          }
+        }
+      }
+    },
+    {
+      "kind": "youtube#subscription",
+      "etag": "oFz5zfOVUAGtKzUafz0VlE-vCwA",
+      "id": "b8kci53LCXYbk6Qe1yUDEvy8SFrGemmc7uCcR-T7QDs",
+      "snippet": {
+        "publishedAt": "2016-09-04T18:16:59Z",
+        "title": "Learn Italian with Lucrezia",
+        "description": "Learn Italian with Lucrezia - video lessons, vlogs and more, all in Italian! \n\nhttp://youtube.com/lucreziaoddone\nhttp://facebook.com/LearnItalianwithLucrezia\nhttp://instagram.com/lucreziaoddone\n\nBLOG learnitalianwithlucrezia.org",
+        "resourceId": {
+          "kind": "youtube#channel",
+          "channelId": "UCnVc-IW8Q98qFmQcXla5FdQ"
+        },
+        "channelId": "UC0byS93fJLZ2nDZoPqGaxCA",
+        "thumbnails": {
+          "default": {
+            "url": "https://yt3.ggpht.com/-sMYh3XmrqXc/AAAAAAAAAAI/AAAAAAAAAAA/5B7mmwr-cZg/s88-c-k-no-mo-rj-c0xffffff/photo.jpg"
+          },
+          "medium": {
+            "url": "https://yt3.ggpht.com/-sMYh3XmrqXc/AAAAAAAAAAI/AAAAAAAAAAA/5B7mmwr-cZg/s240-c-k-no-mo-rj-c0xffffff/photo.jpg"
+          },
+          "high": {
+            "url": "https://yt3.ggpht.com/-sMYh3XmrqXc/AAAAAAAAAAI/AAAAAAAAAAA/5B7mmwr-cZg/s800-c-k-no-mo-rj-c0xffffff/photo.jpg"
+          }
+        }
+      }
+    }
+  ]
+}

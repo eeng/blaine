@@ -25,18 +25,19 @@ defmodule Blaine.Google.YouTubeAPI do
   @impl true
   def my_subscriptions(token) do
     client(token)
-    |> http().get("/subscriptions", query: [mine: true, part: "snippet", maxResults: 50])
+    |> get_all_pages("/subscriptions", query: [mine: true, part: "snippet", maxResults: 50])
     |> handle_subscriptions_response()
   end
 
-  defp handle_subscriptions_response({:ok, %{"items" => items}}) do
-    response =
-      for %{"snippet" => %{"title" => title, "resourceId" => %{"channelId" => channel_id}}} <-
+  defp handle_subscriptions_response({:ok, responses}) do
+    subscriptions =
+      for %{"items" => items} <- responses,
+          %{"snippet" => %{"title" => title, "resourceId" => %{"channelId" => channel_id}}} <-
             items do
         %{title: title, channel_id: channel_id}
       end
 
-    {:ok, response}
+    {:ok, subscriptions}
   end
 
   defp handle_subscriptions_response(response), do: response
@@ -102,6 +103,22 @@ defmodule Blaine.Google.YouTubeAPI do
 
       _ ->
         {:error, error}
+    end
+  end
+
+  defp get_all_pages(client, url, opts), do: get_all_pages(client, url, opts, [])
+
+  defp get_all_pages(client, url, opts, responses) do
+    case http().get(client, url, opts) do
+      {:ok, %{"nextPageToken" => next_page} = response} ->
+        opts = update_in(opts[:query], &Keyword.put(&1, :pageToken, next_page))
+        get_all_pages(client, url, opts, [response | responses])
+
+      {:ok, response} ->
+        {:ok, [response | responses] |> Enum.reverse()}
+
+      result ->
+        result
     end
   end
 end

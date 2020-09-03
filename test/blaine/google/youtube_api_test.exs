@@ -26,6 +26,24 @@ defmodule Blaine.Google.YouTubeAPITest do
               ]} = YouTubeAPI.my_subscriptions(@token)
     end
 
+    test "if the response contains a nextPageToken, should make another request" do
+      response1 = fixture("youtube/list_subscriptions_more_results.json")
+      response2 = fixture("youtube/list_subscriptions.json")
+
+      q1 = [mine: true, part: "snippet", maxResults: 50]
+      q2 = [pageToken: "CAIQAA", mine: true, part: "snippet", maxResults: 50]
+
+      MockHTTP
+      |> expect(:get, fn _, "/subscriptions", query: ^q1 -> {:ok, response1} end)
+      |> expect(:get, fn _, "/subscriptions", query: ^q2 -> {:ok, response2} end)
+
+      {:ok, videos} = YouTubeAPI.my_subscriptions(@token)
+      assert ~w(
+        UCzdnvMNNeBSRRh1KWuJ_BUQ UCnVc-IW8Q98qFmQcXla5FdQ
+        UCEBb1b_L6zDS3xTUrIALZOw UC2DjFE7Xf11URZqWBigcVOQ
+      ) == videos |> Enum.map(& &1.channel_id)
+    end
+
     test "when an error occours, should return it as is" do
       MockHTTP |> expect(:get, fn _, _, _ -> {:error, :unauthorized} end)
       assert {:error, :unauthorized} = YouTubeAPI.my_subscriptions(@token)

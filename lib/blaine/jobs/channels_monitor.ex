@@ -37,13 +37,12 @@ defmodule Blaine.Jobs.ChannelsMonitor do
   @impl true
   def handle_info(:work, %State{last_run_at: last_run_at} = state) do
     Logger.info("Looking for uploads published after #{last_run_at}...")
+    new_last_run_at = DateTime.utc_now()
 
     {:ok, added_count} =
       @uploads_service.find_uploads_and_add_to_watch_later(published_after: last_run_at)
 
     Logger.info("Done! Videos added: #{added_count}")
-
-    new_last_run_at = DateTime.utc_now()
     @repository.save_last_run_at(new_last_run_at)
 
     {:noreply, %{state | last_run_at: new_last_run_at}}

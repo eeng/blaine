@@ -27,18 +27,15 @@ defmodule Blaine.Services.UploadsService do
     |> Enum.flat_map(&find_uploads_for_account(&1, opts))
   end
 
-  def find_uploads_for_account(%Account{auth_token: token, name: account_name}, opts \\ []) do
+  def find_uploads_for_account(%Account{auth_token: token} = account, opts \\ []) do
     {max_concurrency, opts} = Keyword.pop(opts, :max_concurrency, System.schedulers_online() * 2)
 
     {:ok, subs} = @youtube_api.my_subscriptions(token)
 
-    Logger.info(
-      "Finding latest uploads for account #{account_name} (#{Enum.count(subs)} channels)..."
-    )
-
     subs
     |> Enum.map(&to_channel/1)
     |> Channel.filter(opts)
+    |> log_account_channels(account)
     |> Task.async_stream(&find_uploads_for_channel(token, &1, opts),
       max_concurrency: max_concurrency
     )
@@ -56,6 +53,20 @@ defmodule Blaine.Services.UploadsService do
     videos
     |> Enum.map(&to_video(&1, %{channel | playlist_id: playlist_id}))
     |> Video.filter(opts)
+    |> log_found_videos(channel)
+  end
+
+  defp log_account_channels(channels, %Account{name: account_name}) do
+    Logger.info(fn ->
+      "Finding latest uploads for account #{account_name} (#{Enum.count(channels)} channels)..."
+    end)
+
+    channels
+  end
+
+  defp log_found_videos(videos, %Channel{name: name}) do
+    Logger.info("New videos in channel #{name}: #{Enum.count(videos)}")
+    videos
   end
 
   defp to_video(%{video_id: id} = fields, channel) do

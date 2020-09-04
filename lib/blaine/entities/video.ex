@@ -1,8 +1,7 @@
 defmodule Blaine.Entities.Video do
   defstruct [:id, :title, :published_at, :channel]
 
-  def filter_and_sort(videos, opts) do
-    videos = videos |> Enum.sort_by(& &1.published_at, DateTime)
+  def filter(videos, opts) do
     Enum.reduce(opts, videos, &filter_by/2)
   end
 

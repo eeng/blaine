@@ -28,7 +28,7 @@ defmodule Blaine.Services.UploadsService do
   end
 
   def find_uploads_for_account(%Account{auth_token: token, name: account_name}, opts \\ []) do
-    max_concurrency = Keyword.get(opts, :max_concurrency, System.schedulers_online() * 2)
+    {max_concurrency, opts} = Keyword.pop(opts, :max_concurrency, System.schedulers_online() * 2)
 
     {:ok, subs} = @youtube_api.my_subscriptions(token)
 
@@ -38,20 +38,24 @@ defmodule Blaine.Services.UploadsService do
 
     subs
     |> Enum.map(&to_channel/1)
-    |> Channel.filter_channels(opts)
-    |> Task.async_stream(&find_uploads_for_channel(token, &1), max_concurrency: max_concurrency)
+    |> Channel.filter(opts)
+    |> Task.async_stream(&find_uploads_for_channel(token, &1, opts),
+      max_concurrency: max_concurrency
+    )
     |> Enum.flat_map(fn {:ok, videos} -> videos end)
-    |> Video.filter_and_sort(opts)
   end
 
   defp to_channel(%{channel_id: channel_id, title: channel_name}) do
     %Channel{id: channel_id, name: channel_name}
   end
 
-  def find_uploads_for_channel(token, %Channel{id: channel_id} = channel) do
+  def find_uploads_for_channel(token, %Channel{id: channel_id} = channel, opts) do
     {:ok, playlist_id} = @youtube_api.get_uploads_playlist_id(token, channel_id)
     {:ok, videos} = @youtube_api.list_videos(token, playlist_id)
-    videos |> Enum.map(&to_video(&1, %{channel | playlist_id: playlist_id}))
+
+    videos
+    |> Enum.map(&to_video(&1, %{channel | playlist_id: playlist_id}))
+    |> Video.filter(opts)
   end
 
   defp to_video(%{video_id: id} = fields, channel) do

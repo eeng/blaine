@@ -53,6 +53,7 @@ defmodule Blaine.Services.UploadsService do
     videos
     |> Enum.map(&to_video(&1, %{channel | playlist_id: playlist_id}))
     |> Video.filter(opts)
+    |> log_found_videos(channel)
   end
 
   defp log_account_channels(channels, %Account{name: account_name}) do
@@ -61,6 +62,11 @@ defmodule Blaine.Services.UploadsService do
     end)
 
     channels
+  end
+
+  defp log_found_videos(videos, %Channel{name: name}) do
+    Logger.info("New videos in channel #{name}: #{Enum.count(videos)}")
+    videos
   end
 
   defp to_video(%{video_id: id} = fields, channel) do

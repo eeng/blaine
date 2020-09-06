@@ -25,7 +25,9 @@ defmodule Blaine.Google.YouTubeAPI do
   @impl true
   def my_subscriptions(token) do
     client(token)
-    |> get_all_pages("/subscriptions", query: [mine: true, part: "snippet", maxResults: 50])
+    |> get_all_pages("/subscriptions",
+      query: [mine: true, part: "snippet", order: "alphabetical", maxResults: 50]
+    )
     |> handle_subscriptions_response()
   end
 

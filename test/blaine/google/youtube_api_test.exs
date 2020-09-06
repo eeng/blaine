@@ -16,7 +16,7 @@ defmodule Blaine.Google.YouTubeAPITest do
   describe "my_subscriptions" do
     test "should return the channel's id and title for each subscription" do
       response = fixture("youtube/list_subscriptions.json")
-      q = [mine: true, part: "snippet", maxResults: 50]
+      q = [mine: true, part: "snippet", order: "alphabetical", maxResults: 50]
       MockHTTP |> expect(:get, fn _, "/subscriptions", query: ^q -> {:ok, response} end)
 
       assert {:ok,
@@ -30,8 +30,8 @@ defmodule Blaine.Google.YouTubeAPITest do
       response1 = fixture("youtube/list_subscriptions_more_results.json")
       response2 = fixture("youtube/list_subscriptions.json")
 
-      q1 = [mine: true, part: "snippet", maxResults: 50]
-      q2 = [pageToken: "CAIQAA", mine: true, part: "snippet", maxResults: 50]
+      q1 = [mine: true, part: "snippet", order: "alphabetical", maxResults: 50]
+      q2 = Keyword.put(q1, :pageToken, "CAIQAA")
 
       MockHTTP
       |> expect(:get, fn _, "/subscriptions", query: ^q1 -> {:ok, response1} end)

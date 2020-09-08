@@ -41,7 +41,10 @@ defmodule Blaine.Jobs.ChannelsMonitorTest do
 
     defp expect_service_called_with(published_after) do
       MockUploadsService
-      |> expect(:find_uploads_and_add_to_watch_later, fn published_after: ^published_after ->
+      |> expect(:find_uploads_and_add_to_watch_later, fn opts ->
+        an_hour_before = DateTime.add(published_after, -3600, :second)
+        assert Keyword.get(opts, :published_after) == an_hour_before
+        assert Keyword.get(opts, :already_seen) == MapSet.new()
         []
       end)
     end

@@ -13,7 +13,20 @@ defmodule Blaine.Jobs.ChannelsMonitor do
   @repository Application.get_env(:blaine, :components)[:repository]
 
   defmodule State do
-    defstruct [:interval, :last_run_at, :seen_videos]
+    defstruct [
+      # The server will run every :interval minutes.
+      :interval,
+
+      # YouTube sometimes has a delay between the published_at time of a video,
+      # an the time it appears on the playlistItems endpoint. Hence, on each
+      # execution we scan again a previous interval.
+      # Otherwise some videos were missed.
+      :lookback_span,
+      :seen_videos,
+
+      # Each execution will find uploads after :last_run_at - :lookback_span
+      :last_run_at
+    ]
   end
 
   def start_link(opts) do
@@ -22,27 +35,38 @@ defmodule Blaine.Jobs.ChannelsMonitor do
 
   @impl true
   def init(opts) do
-    interval = Keyword.get(opts, :interval, 0) * 1000
+    interval = Keyword.get(opts, :interval, 0)
+    lookback_span = Keyword.get(opts, :lookback_span, 60)
     last_run_at = @repository.last_run_at() || DateTime.utc_now()
-    state = %State{interval: interval, last_run_at: last_run_at, seen_videos: MapSet.new()}
+
+    state = %State{
+      interval: interval,
+      lookback_span: lookback_span,
+      last_run_at: last_run_at,
+      seen_videos: MapSet.new()
+    }
 
     if interval > 0 do
-      Logger.info("Monitoring with interval: #{interval}, last_run_at: #{last_run_at}")
-      :timer.send_interval(interval, :work)
+      Logger.info(
+        "Monitoring with interval: #{interval} min, " <>
+          "looking back: #{lookback_span} min, last_run_at: #{last_run_at}"
+      )
+
+      :timer.send_interval(interval * 60 * 1000, :work)
     end
 
     {:ok, state}
   end
 
   @impl true
-  def handle_info(:work, %State{last_run_at: last_run_at, seen_videos: seen_videos} = state) do
+  def handle_info(:work, %State{last_run_at: last_run_at} = state) do
     Logger.info("Looking for uploads published after #{last_run_at}...")
     new_last_run_at = DateTime.utc_now()
 
-    added_ids = find_uploads_and_add_to_watch_later(published_after: last_run_at)
+    added_ids = find_uploads_and_add_to_watch_later(state)
 
     @repository.save_last_run_at(new_last_run_at)
-    new_seen_videos = added_ids |> Enum.into(seen_videos)
+    new_seen_videos = added_ids |> Enum.into(state.seen_videos)
 
     Logger.info(fn ->
       "Done! Videos added: #{Enum.count(added_ids)}. Seen: #{Enum.count(new_seen_videos)}"
@@ -51,8 +75,14 @@ defmodule Blaine.Jobs.ChannelsMonitor do
     {:noreply, %{state | last_run_at: new_last_run_at, seen_videos: new_seen_videos}}
   end
 
-  defp find_uploads_and_add_to_watch_later(opts) do
-    @uploads_service.find_uploads_and_add_to_watch_later(opts)
+  defp find_uploads_and_add_to_watch_later(state) do
+    %State{last_run_at: last_run_at, lookback_span: lookback_span} = state
+    published_after = last_run_at |> DateTime.add(-lookback_span * 60, :second)
+
+    @uploads_service.find_uploads_and_add_to_watch_later(
+      published_after: published_after,
+      already_seen: state.seen_videos
+    )
     |> Enum.map(fn
       {video, :ok} -> video
       {video, {:error, :already_in_playlist}} -> video

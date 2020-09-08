@@ -11,5 +11,12 @@ defmodule Blaine.Entities.VideoTest do
 
       assert [v2] = Video.filter([v1, v2], published_after: ~U[2020-07-16 00:00:00Z])
     end
+
+    test "already_seen" do
+      v1 = build(:video)
+      v2 = build(:video)
+
+      assert [v1] = Video.filter([v1, v2], already_seen: MapSet.new([v2.id]))
+    end
   end
 end

@@ -2,9 +2,21 @@ defmodule Blaine.Jobs.ChannelsMonitorTest do
   use ExUnit.Case
   use Blaine.Mocks
 
+  import Blaine.Factory
+
   alias Blaine.Jobs.ChannelsMonitor
   alias Blaine.Services.MockUploadsService
   alias Blaine.Persistance.MockRepository
+
+  setup context do
+    if context[:stub_repo] do
+      MockRepository
+      |> stub(:last_run_at, fn -> nil end)
+      |> stub(:save_last_run_at, fn _ -> :ok end)
+    end
+
+    :ok
+  end
 
   describe "checkpoint execution" do
     test "calls the service with the last_run_at and then updates it" do
@@ -30,18 +42,34 @@ defmodule Blaine.Jobs.ChannelsMonitorTest do
     defp expect_service_called_with(published_after) do
       MockUploadsService
       |> expect(:find_uploads_and_add_to_watch_later, fn published_after: ^published_after ->
-        {:ok, 0}
+        []
       end)
     end
 
-    @tag capture_log: true
+    @tag :stub_repo
+    test "should keep a set with the seen videos" do
+      [v1, v2] = build(:video, 2)
+
+      MockUploadsService
+      |> expect(:find_uploads_and_add_to_watch_later, fn _ ->
+        [{v1, :ok}, {v2, {:error, :already_in_playlist}}]
+      end)
+
+      monitor = start_supervised!(ChannelsMonitor)
+      send(monitor, :work)
+      assert :sys.get_state(monitor).seen_videos == MapSet.new([v1.id, v2.id])
+    end
+
+    @tag :capture_log
     test "if the service returns an error, it should crash (that way it'll be restarted and continue where it left off)" do
       MockRepository
       |> expect(:last_run_at, fn -> nil end)
       |> expect(:save_last_run_at, 0, fn _ -> :ok end)
 
       MockUploadsService
-      |> expect(:find_uploads_and_add_to_watch_later, fn _ -> {:error, "oops"} end)
+      |> expect(:find_uploads_and_add_to_watch_later, fn _ ->
+        [build(:video), {:error, "oops"}]
+      end)
 
       monitor = start_supervised!(ChannelsMonitor)
 

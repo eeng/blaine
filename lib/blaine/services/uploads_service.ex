@@ -1,5 +1,8 @@
 defmodule Blaine.Services.UploadsService.Behaviour do
-  @callback find_uploads_and_add_to_watch_later(list) :: {:ok, integer} | {:error, any}
+  alias Blaine.Entities.Video
+
+  @type result :: :ok | {:error, any}
+  @callback find_uploads_and_add_to_watch_later(list) :: [{%Video{}, result}]
 end
 
 defmodule Blaine.Services.UploadsService do
@@ -75,13 +78,13 @@ defmodule Blaine.Services.UploadsService do
     |> Map.put(:channel, channel)
   end
 
+  @doc """
+  Uses the YouTube API to insert the videos to the specified playlist (default to WL).
+  Returns the added videos.
+  """
   def add_videos_to_playlist(videos, opts \\ []) do
-    added_videos =
-      @accounts_manager.accounts(:watcher)
-      |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, opts))
-      |> Enum.sum()
-
-    {:ok, added_videos}
+    @accounts_manager.accounts(:watcher)
+    |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, opts))
   end
 
   defp add_videos_to_playlist_of_account(%Account{auth_token: token}, videos, opts) do
@@ -91,13 +94,9 @@ defmodule Blaine.Services.UploadsService do
 
   defp add_video_to_playlist(video, playlist, token) do
     %Video{id: id, title: title, channel: %{name: channel_name}} = video
-
     Logger.info("#{channel_name} has uploaded a new video: #{title}")
-
-    case @youtube_api.insert_video(token, id, playlist) do
-      :ok -> 1
-      {:error, :already_in_playlist} -> 0
-    end
+    result = @youtube_api.insert_video(token, id, playlist)
+    {video, result}
   end
 
   @impl true

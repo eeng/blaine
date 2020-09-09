@@ -48,7 +48,7 @@ defmodule Blaine.Jobs.ChannelsMonitor do
 
     if interval > 0 do
       Logger.info(
-        "Monitoring with interval: #{interval} min, " <>
+        "Starting monitor with interval: #{interval} min, " <>
           "looking back: #{lookback_span} min, last_run_at: #{last_run_at}"
       )
 
@@ -59,30 +59,31 @@ defmodule Blaine.Jobs.ChannelsMonitor do
   end
 
   @impl true
-  def handle_info(:work, %State{last_run_at: last_run_at} = state) do
-    Logger.info("Looking for uploads published after #{last_run_at}...")
+  def handle_info(:work, %State{last_run_at: last_run_at, lookback_span: lookback_span} = state) do
+    published_after = last_run_at |> DateTime.add(-lookback_span * 60, :second)
     new_last_run_at = DateTime.utc_now()
 
-    added_ids = find_uploads_and_add_to_watch_later(state)
+    Logger.info(
+      "Looking for uploads published after #{published_after}" <>
+        " (seen: #{Enum.count(state.seen_videos)}) ..."
+    )
+
+    added_ids =
+      find_uploads_and_add_to_watch_later(
+        published_after: published_after,
+        already_seen: state.seen_videos
+      )
+
+    Logger.info("Done! Videos added: #{Enum.count(added_ids)}")
 
     @repository.save_last_run_at(new_last_run_at)
     new_seen_videos = added_ids |> Enum.into(state.seen_videos)
 
-    Logger.info(fn ->
-      "Done! Videos added: #{Enum.count(added_ids)}. Seen: #{Enum.count(new_seen_videos)}"
-    end)
-
     {:noreply, %{state | last_run_at: new_last_run_at, seen_videos: new_seen_videos}}
   end
 
-  defp find_uploads_and_add_to_watch_later(state) do
-    %State{last_run_at: last_run_at, lookback_span: lookback_span} = state
-    published_after = last_run_at |> DateTime.add(-lookback_span * 60, :second)
-
-    @uploads_service.find_uploads_and_add_to_watch_later(
-      published_after: published_after,
-      already_seen: state.seen_videos
-    )
+  defp find_uploads_and_add_to_watch_later(filters) do
+    @uploads_service.find_uploads_and_add_to_watch_later(filters)
     |> Enum.map(fn
       {video, :ok} -> video
       {video, {:error, :already_in_playlist}} -> video

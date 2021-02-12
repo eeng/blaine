@@ -96,7 +96,12 @@ defmodule Blaine.Services.UploadsService do
     %Video{id: id, title: title, channel: %{name: channel_name}} = video
     Logger.info("#{channel_name} has uploaded a new video: #{title}")
     result = @youtube_api.insert_video(token, id, playlist)
-    {video, result}
+
+    case result do
+      :ok -> {video, result}
+      {:error, :already_in_playlist} -> {video, result}
+      {:error, error} -> raise "Unexpected error when uploading video: #{inspect(error)}"
+    end
   end
 
   @impl true

@@ -84,14 +84,16 @@ defmodule Blaine.Services.UploadsServiceTest do
       assert [{v1, {:error, :already_in_playlist}}] = UploadsService.add_videos_to_playlist([v])
     end
 
-    test "when there is another error", %{account: account} do
+    test "when there is an unexpected error, it should crash", %{account: account} do
       v = build(:video)
       MockAccountsManager |> expect(:accounts, fn :watcher -> [account] end)
 
       MockYouTubeAPI
-      |> expect(:insert_video, fn @token, _, _ -> {:error, "oops"} end)
+      |> expect(:insert_video, fn @token, _, _ -> {:error, %{"error" => %{"code" => 400}}} end)
 
-      assert [{v, {:error, "oops"}}] = UploadsService.add_videos_to_playlist([v])
+      assert_raise RuntimeError, ~r/error when uploading video/, fn ->
+        UploadsService.add_videos_to_playlist([v])
+      end
     end
   end
 end

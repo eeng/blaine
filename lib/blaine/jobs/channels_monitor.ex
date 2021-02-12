@@ -9,6 +9,8 @@ defmodule Blaine.Jobs.ChannelsMonitor do
 
   require Logger
 
+  alias Blaine.Entities.Video
+
   @uploads_service Application.get_env(:blaine, :components)[:uploads_service]
   @repository Application.get_env(:blaine, :components)[:repository]
 
@@ -84,10 +86,6 @@ defmodule Blaine.Jobs.ChannelsMonitor do
 
   defp find_uploads_and_add_to_watch_later(filters) do
     @uploads_service.find_uploads_and_add_to_watch_later(filters)
-    |> Enum.map(fn
-      {video, :ok} -> video
-      {video, {:error, :already_in_playlist}} -> video
-    end)
-    |> Enum.map(& &1.id)
+    |> Enum.map(fn {%Video{id: id}, _} -> id end)
   end
 end

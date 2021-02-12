@@ -71,7 +71,7 @@ defmodule Blaine.Jobs.ChannelsMonitorTest do
 
       MockUploadsService
       |> expect(:find_uploads_and_add_to_watch_later, fn _ ->
-        [build(:video), {:error, "oops"}]
+        raise "oops"
       end)
 
       monitor = start_supervised!(ChannelsMonitor)
@@ -79,6 +79,7 @@ defmodule Blaine.Jobs.ChannelsMonitorTest do
       ref = Process.monitor(monitor)
       send(monitor, :work)
       assert_receive {:DOWN, ^ref, _, ^monitor, _}
+      refute Process.info(monitor)
     end
   end
 end

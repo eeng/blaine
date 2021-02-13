@@ -11,7 +11,7 @@ defmodule Blaine.Services.UploadsServiceTest do
   @token build(:auth_token)
 
   setup do
-    %{account: build(:account, auth_token: @token)}
+    %{account: build(:account, auth_token: @token, add_to_playlist_id: "WL")}
   end
 
   describe "find_uploads_for_account" do

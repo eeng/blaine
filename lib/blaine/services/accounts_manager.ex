@@ -42,13 +42,21 @@ defmodule Blaine.Services.AccountsManager do
   defp scopes_for(:both), do: @watcher_scopes
 
   @impl true
-  def add_account(code, role) do
+  def add_account(code, fields) do
     with {:ok, token} <- @auth_api.get_token(code),
          {:ok, profile} <- @people_api.me(token),
-         account <- build_account(code, role, token, profile),
+         {:ok, account} <- build_account(code, token, profile, fields),
          @repository.add_account(account) do
       {:ok, account}
     end
+  end
+
+  defp build_account(code, token, profile, fields) do
+    Account.build(
+      fields
+      |> Enum.into(profile)
+      |> Map.merge(%{code: code, auth_token: token})
+    )
   end
 
   @impl true
@@ -71,10 +79,5 @@ defmodule Blaine.Services.AccountsManager do
         @repository.add_account(new_account)
         new_account
     end
-  end
-
-  defp build_account(code, role, token, profile) do
-    %Account{code: code, role: role, auth_token: token}
-    |> struct(profile)
   end
 end

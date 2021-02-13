@@ -79,17 +79,19 @@ defmodule Blaine.Services.UploadsService do
   end
 
   @doc """
-  Uses the YouTube API to insert the videos to the specified playlist (default to WL).
+  Uses the YouTube API to insert the videos to the account specified playlist.
   Returns the added videos.
   """
-  def add_videos_to_playlist(videos, opts \\ []) do
+  def add_videos_to_playlist(videos) do
     @accounts_manager.accounts(:watcher)
-    |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos, opts))
+    |> Enum.flat_map(&add_videos_to_playlist_of_account(&1, videos))
   end
 
-  defp add_videos_to_playlist_of_account(%Account{auth_token: token}, videos, opts) do
-    playlist = Keyword.get(opts, :playlist, "WL")
-    videos |> Enum.map(&add_video_to_playlist(&1, playlist, token))
+  defp add_videos_to_playlist_of_account(
+         %Account{auth_token: token, add_to_playlist_id: playlist_id},
+         videos
+       ) do
+    videos |> Enum.map(&add_video_to_playlist(&1, playlist_id, token))
   end
 
   defp add_video_to_playlist(video, playlist, token) do
@@ -106,6 +108,6 @@ defmodule Blaine.Services.UploadsService do
 
   @impl true
   def find_uploads_and_add_to_watch_later(opts) do
-    find_uploads(opts) |> add_videos_to_playlist(opts)
+    find_uploads(opts) |> add_videos_to_playlist()
   end
 end

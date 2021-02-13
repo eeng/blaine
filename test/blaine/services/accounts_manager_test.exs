@@ -47,7 +47,7 @@ defmodule Blaine.Services.AccountsManagerTest do
     test "should exchange the code for the token using the Auth API" do
       token = %AuthToken{access_token: "at"}
       MockAuthAPI |> expect(:get_token, fn "some code" -> {:ok, token} end)
-      {:ok, account} = AccountsManager.add_account("some code", :provider)
+      {:ok, account} = AccountsManager.add_account("some code", role: :provider)
       assert %Account{auth_token: ^token} = account
     end
 
@@ -57,13 +57,13 @@ defmodule Blaine.Services.AccountsManagerTest do
       MockAuthAPI |> expect(:get_token, fn _ -> {:ok, "token"} end)
       MockPeopleAPI |> expect(:me, fn "token" -> response end)
 
-      {:ok, account} = AccountsManager.add_account("code", :provider)
+      {:ok, account} = AccountsManager.add_account("code", role: :provider)
       assert %Account{id: "100", name: "Max"} = account
     end
 
     test "should add the account to the repo" do
       MockRepository |> expect(:add_account, fn %Account{code: "A", role: :provider} -> :ok end)
-      AccountsManager.add_account("A", :provider)
+      AccountsManager.add_account("A", role: :provider)
     end
   end
 

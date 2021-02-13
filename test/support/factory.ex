@@ -3,7 +3,7 @@ defmodule Blaine.Factory do
   alias Blaine.Google.AuthToken
 
   def build(:account) do
-    %Account{id: to_string(sequence()), role: :both}
+    %Account{id: to_string(sequence()), role: :provider}
   end
 
   def build(:video) do

@@ -4,7 +4,6 @@ defmodule Mix.Tasks.Blaine.Accounts.List do
   use Mix.Task
 
   alias Blaine.Services.AccountsManager
-  alias Blaine.Entities.Account
 
   def run(_args) do
     Application.ensure_all_started(:blaine)
@@ -15,15 +14,7 @@ defmodule Mix.Tasks.Blaine.Accounts.List do
 
       accounts ->
         IO.puts("Current Accounts:")
-        Enum.each(accounts, &print_account_details/1)
+        Enum.each(accounts, &IO.inspect/1)
     end
-  end
-
-  defp print_account_details(%Account{id: id, name: name, email: email, role: role}) do
-    IO.puts("")
-    IO.puts("Name: #{name}")
-    IO.puts("Email: #{email}")
-    IO.puts("ID: #{id}")
-    IO.puts("Role: #{role}")
   end
 end

@@ -5,6 +5,7 @@ defmodule Mix.Tasks.Blaine.Accounts.Add do
   ## Arguments:
 
     * `--role`: provider | watcher | both
+    * `--add-to-playlist-id`: For watcher role, indicates where to add the videos
   """
 
   use Mix.Task
@@ -14,8 +15,11 @@ defmodule Mix.Tasks.Blaine.Accounts.Add do
   def run(args) do
     Application.ensure_all_started(:blaine)
 
-    {opts, _args} = OptionParser.parse!(args, strict: [role: :string])
+    {opts, _args} =
+      OptionParser.parse!(args, switches: [role: :string, add_to_playlist_id: :string])
+
     role = Keyword.fetch!(opts, :role) |> String.to_atom()
+    add_to_playlist_id = Keyword.get(opts, :add_to_playlist_id)
 
     auth_url = AccountsManager.authorize_url_for(role)
 
@@ -24,7 +28,8 @@ defmodule Mix.Tasks.Blaine.Accounts.Add do
 
     code = IO.gets("Then paste the given code here: ") |> String.trim()
 
-    {:ok, account} = AccountsManager.add_account(code, role)
+    {:ok, account} =
+      AccountsManager.add_account(code, role: role, add_to_playlist_id: add_to_playlist_id)
 
     IO.puts("\nWell done! Account Details:\n")
     IO.puts("ID: #{account.id}")
